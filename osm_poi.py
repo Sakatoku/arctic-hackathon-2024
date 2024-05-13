@@ -1,3 +1,31 @@
+# osm_poi.py
+# OpenStreetMapに登録されているPOIを取得するサンプル
+
+"""
+This script retrieves Points of Interest (POI) from OpenStreetMap using the Overpass API and displays them on a map using Streamlit and Folium.
+
+The script performs the following steps:
+1. Imports the necessary libraries: streamlit, folium, overpy, pandas, and pickle.
+2. Defines the default area, latitude, and longitude.
+3. Initializes Streamlit and sets the page configuration.
+4. Defines functions to query restaurants and tourism spots in the target area using the Overpass API.
+5. Defines a function to convert the Overpass API result to a DataFrame.
+6. Defines functions to extract major restaurants and tourism spots based on metadata input.
+7. Defines functions to build popup content for restaurants and tourism spots.
+8. Defines a function to create a map and add markers for restaurants and tourism spots.
+9. Defines a function to display the map using Streamlit and Folium.
+10. Defines a function to serialize a DataFrame to a Pickle file.
+11. Defines the main function that orchestrates the execution of the script.
+12. Calls the main function if the script is executed directly.
+
+To use this script, you need to have the necessary libraries installed and provide a target area. The script will query the Overpass API for restaurants and tourism spots in the target area, convert the results to DataFrames, extract major spots based on metadata input, create a map, and display it using Streamlit and Folium. You can also download the DataFrames as Pickle files.
+
+Note: This script assumes that you have a valid Overpass API endpoint and the necessary API credentials.
+
+Author: Akira Sakatoku
+Date: 2024-05-13
+"""
+
 # Streamlit: https://www.streamlit.io/
 import streamlit as st
 
@@ -9,7 +37,9 @@ from streamlit_folium import st_folium
 # pip install overpy
 import overpy
 
+# General libraries
 import pandas as pd
+import pickle
 
 # Target area
 default_area = "San Francisco"
@@ -124,6 +154,11 @@ def create_map(df_restaurants, df_tourism_spots, center=(default_latitude, defau
 def display_map(map):
     st_folium(map, use_container_width=True, height=800)
 
+# Serialize a DataFrame to a Pickle file
+def serialize(df):
+    serialized_bytes = pickle.dumps(df, protocol=4)
+    return serialized_bytes
+
 # Main function
 def main():
     # Initialize Streamlit
@@ -157,8 +192,22 @@ def main():
     # st.dataframe(df_tourism_spots)
 
     # Create a map and display it
-    map = create_map(df_restaurants, df_tourism_spots)
-    display_map(map)
+    # map = create_map(df_restaurants, df_tourism_spots)
+    # display_map(map)
+
+    # Download DataFrames as Pickle files
+    st.download_button(
+        label="Download restaurants as Pickle",
+        data=serialize(df_restaurants),
+        file_name="restaurants.pkl",
+        mime="application/octet-stream",
+    )
+    st.download_button(
+        label="Download tourism spots as Pickle",
+        data=serialize(df_tourism_spots),
+        file_name="tourism_spots.pkl",
+        mime="application/octet-stream",
+    )
 
 if __name__ == '__main__':
     main()
