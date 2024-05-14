@@ -192,8 +192,8 @@ def main():
     # st.dataframe(df_tourism_spots)
 
     # Create a map and display it
-    # map = create_map(df_restaurants, df_tourism_spots)
-    # display_map(map)
+    map = create_map(df_restaurants, df_tourism_spots)
+    display_map(map)
 
     # Download DataFrames as Pickle files
     st.download_button(
