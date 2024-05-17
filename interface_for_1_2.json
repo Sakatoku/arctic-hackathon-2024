@@ -1,0 +1,20 @@
+{
+	"destination": "san-francisco",
+	"purpose": "purpose",
+	"traveler": {
+		"age": "elder|family|young",
+		"number_of_people": 2
+	},
+	"duration": {
+		"arrival_time": "6/2",
+		"departure_time": "6/6"
+	},
+	"activities": [
+		"activity1"
+	],
+	"accomodation": [
+		"accomodation1"
+	],
+	"budget": "high|middle|low",
+	"notes": ""
+}
