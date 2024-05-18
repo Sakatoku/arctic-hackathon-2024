@@ -4,6 +4,7 @@
             "type": "meal",
             "title": "Start Your Day Sweetly with Gourmet Pastries",
             "description": "Enjoy your breakfast at B. Patisserie, renowned for its delectable kouign-amann and carefully selected Kona coffee.",
+            "image": "temp/photo_0800.jpg",
             "url": "https://bpatisserie.com/",
             "datetime": "2024-06-02T08:00:00Z",
             "location": {
@@ -16,6 +17,7 @@
             "type": "sightseeing",
             "title": "Across the Legendary Landmark",
             "description": "Experience the breathtaking vistas and take a memorable walk across the Golden Gate Bridge.",
+            "image": "temp/photo_0900.jpg",
             "url": "https://en.wikipedia.org/wiki/Golden_Gate_Bridge",
             "datetime": "2024-06-02T09:00:00Z",
             "location": {
@@ -28,6 +30,7 @@
             "type": "museum",
             "title": "Immerse Yourself in Contemporary Creativity and Inspiring Artworks",
             "description": "Discover cutting-edge exhibits and modern masterpieces at the San Francisco Museum of Modern Art.",
+            "image": "temp/photo_1000.jpg",
             "url": "https://www.sfmoma.org/",
             "datetime": "2024-06-02T10:00:00Z",
             "location": {
@@ -40,6 +43,7 @@
             "type": "shopping",
             "title": "Shop 'Til You Drop in the Heart of the City",
             "description": "njoy a day of street shopping and vibrant city life at Union Square.",
+            "image": "temp/photo_1100.jpg",
             "url": "https://unionsquareshop.com/",
             "datetime": "2024-06-02T11:00:00Z",
             "location": {
@@ -52,6 +56,7 @@
             "type": "meal",
             "title": "Enjoy a Delicious and Affordable Lunch with Stunning Wharf Views",
             "description": "Savor a delightful lunch at one of Fisherman's Wharf's premier restaurants, Fog Harbor Fish House, known for its oysters, spinach, bacon, and creamy parmesan sauce, all at a reasonable price.",
+            "image": "temp/photo_1200.jpg",
             "url": "https://fogharbor.com/",
             "datetime": "2024-06-02T12:00:00Z",
             "location": {
@@ -64,6 +69,7 @@
             "type": "sightseeing",
             "title": "Unlock the Mysteries of the Infamous Island Prison",
             "description": "Explore the historic Alcatraz Island and delve into its intriguing past as one of the world's most notorious prisons.",
+            "image": "temp/photo_1300.jpg",
             "url": "https://www.nps.gov/alca/index.htm",
             "datetime": "2024-06-02T14:00:00Z",
             "location": {
@@ -76,6 +82,7 @@
             "type": "park",
             "title": "Embrace Nature's Serenity in the Heart of the City",
             "description": "Unwind and enjoy some leisure time amidst the beauty of Golden Gate Park, a tranquil oasis in the bustling city.",
+            "image": "temp/photo_1500.jpg",
             "url": "https://en.wikipedia.org/wiki/Golden_Gate_Park",
             "datetime": "2024-06-02T15:00:00Z",
             "location": {
@@ -88,6 +95,7 @@
             "type": "sightseeing",
             "title": "Hooked on the Bay: Reel in the Fun at Fisherman's Wharf!",
             "description": "Guided fishing tour on San Francisco Bay, with experienced fishermen teaching participants the basics of fishing and helping them catch their own fresh fish.",
+            "image": "temp/photo_1700.jpg",
             "url": "https://www.fishermanswharf.org/",
             "datetime": "2024-06-02T17:00:00Z",
             "location": {
@@ -100,6 +108,7 @@
             "type": "meal",
             "title": "Savor the Authentic Brazilian Flavors of Churrasco with Our Signature Picanha Steak!",
             "description": "Enjoy a traditional Brazilian churrasco experience at Fogo de Chão, a renowned steakhouse. Indulge in the art and science of churrasco cooking with Fogo de Chão's signature dish: Picanha steak.",
+            "image": "temp/photo_1900.jpg",
             "url": "https://fogodechao.com/",
             "datetime": "2024-06-02T19:00:00Z",
             "location": {
@@ -112,6 +121,7 @@
             "type": "theater",
             "title": "Get your groove on at the heart of San Francisco's jazz scene!",
             "description": "\"Jazz Jam Session\" - Come and showcase your musical talents or simply enjoy the sounds of live jazz musicians at the SF Jazz Center's weekly jazz jam session.",
+            "image": "temp/photo_2000.jpg",
             "url": "https://www.sfjazz.org/",
             "datetime": "2024-06-02T20:00:00Z",
             "location": {

@@ -4,6 +4,9 @@
 # Streamlit: https://www.streamlit.io/
 import streamlit as st
 
+# Replicate library
+import replicate
+
 # streamlit-folium: Folium wrapper for Streamlit
 import folium
 from streamlit_folium import st_folium
@@ -13,6 +16,7 @@ from PIL import Image
 import json 
 import datetime
 import time
+import os
 
 # Default latitude/longitude
 default_latitude = 37.77493
@@ -23,6 +27,9 @@ def init():
     st.set_page_config(page_title="Arctic Tourism Guide", page_icon=":airplane_departure:", layout="wide")
     st.title("Arctic Tourism Guide")
 
+    # ReplicateとOpenAIのAPIキーを環境変数に設定する
+    os.environ["REPLICATE_API_TOKEN"] = st.secrets["Replicate"]["apikey"]
+
 # JSONをファイルから読み込む
 def read_json(filename: str) -> dict:
     with open(filename, "r", encoding="utf8") as f:
@@ -31,8 +38,8 @@ def read_json(filename: str) -> dict:
 
 # Build popup content
 def build_popup(item: dict) -> str:
-    template = "<b>{}</b><br>{}<br>{}<br>{}<br>{}<br>{}<br>{}"
-    popup = template.format(item["title"], item["location"]["name"], item["type"], item["description"], item["image"], item["url"], item["datetime"])
+    template = "<b>{}</b><br>{}<br>{}<br>{}<br>{}"
+    popup = template.format(item["title"], item["location"]["name"], item["type"], item["description"], item["url"])
     return popup
 
 # Create a map
@@ -83,8 +90,8 @@ def display_activity(placeholder, activity: dict, next_activity: dict):
         
         # 左側に画像を表示
         with col_left:
-            img = Image.open(activity["image"])
-            st.image(img)
+            image_url = activity["image"]
+            st.image(image_url)
 
         # 右側に説明文を表示
         with col_right:
@@ -93,6 +100,45 @@ def display_activity(placeholder, activity: dict, next_activity: dict):
             st.markdown("from **{}** ({} hours)".format(start_time_str, interval_hour))
             st.write(activity["description"])
             st.write("[{}]({})".format(activity["url"], activity["url"]))
+
+# プロンプトを生成する
+def generate_prompt(situations):
+    type = situations["type"]
+    title = situations["title"]
+    spot_name = situations["location"]["name"]
+    description = situations["description"]
+    datetime = situations["datetime"]
+    return f"""
+    Create a photorealistic image of the following situations: {{ "type": {type}, "title": {title} , "spot_name": {spot_name}, "description": {description}, "datetime": {datetime} }}.
+    """
+
+# 画像を生成する
+def generate_image(activity):
+    # Replicate APIへの入力
+    prompt = generate_prompt(activity)
+    input = {
+        "prompt": prompt
+    }
+
+    # Replicate APIを呼び出して画像を生成する
+    client = replicate.Client(api_token=os.environ["REPLICATE_API_TOKEN"])
+    output = client.run(
+        "bytedance/sdxl-lightning-4step:727e49a643e999d602a896c774a0658ffefea21465756a6ce24b7ea4165eba6a",
+        input=input
+    )
+    return output[0]
+
+    #     # 画像を生成
+    #     image = Image.new("RGB", (800, 600), (255, 255, 255))
+    #     draw = ImageDraw.Draw(image)
+    #     draw.text((10, 10), activity["title"], fill="black")
+    #     draw.text((10, 30), activity["description"], fill="black")
+    #     image.save("tmp.png")
+    #     activity["image"] = "tmp.png"
+    #     # 画像を更新
+    #     activities[activity_index] = activity
+    #     return activities
+    # return activities
 
 # スライダーとアクティビティを連動でアニメーションさせる
 def animation_sliders(activities, sleep_time):
@@ -131,6 +177,9 @@ def animation_sliders(activities, sleep_time):
         next_activity = None
         if activity_index < len(activities) - 1:
             next_activity = activities[activity_index + 1]
+        # 画像がなければ画像を生成する
+        if "image" not in activity:
+            activities[activity_index]["image"] = generate_image(activity)
         # アクティビティを表示
         display_activity(placeholder2, activity, next_activity)
 
