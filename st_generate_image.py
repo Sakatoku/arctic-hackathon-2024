@@ -30,14 +30,14 @@ def generate_prompt(situations):
     """
 
 # Replicate APIを呼び出して画像を生成する
-def generate_image_replicate(user_prompt):
+def generate_image_replicate(model, user_prompt):
     input = {
         "prompt": user_prompt
     }
 
     client = replicate.Client(api_token=os.environ["REPLICATE_API_TOKEN"])
     output = client.run(
-        "bytedance/sdxl-lightning-4step:727e49a643e999d602a896c774a0658ffefea21465756a6ce24b7ea4165eba6a",
+        models[model],
         input=input
     )
     return output[0]
@@ -64,11 +64,18 @@ def generate_image_openai(user_prompt):
     return image_url
 
 # 画像を生成する
-def generate_image(platform, user_prompt):
+def generate_image(platform, model, user_prompt):
     if platform == "Replicate":
-        return generate_image_replicate(user_prompt)
+        return generate_image_replicate(model, user_prompt)
     else:
         return generate_image_openai(user_prompt)
+
+# モデル一覧
+models = {
+    "sdxl-lightning-4step": "bytedance/sdxl-lightning-4step:727e49a643e999d602a896c774a0658ffefea21465756a6ce24b7ea4165eba6a",
+    "sdxl": "stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b",
+    "kandinsky-2.2": "ai-forever/kandinsky-2.2:ad9d7879fbffa2874e1d909d1d37d9bc682889cc65b31f7bb00d2362619f194a"
+}
 
 # Main function
 def main():
@@ -82,6 +89,9 @@ def main():
     ]
     selected_platform = st.sidebar.selectbox("Platform", platforms, index=0)
 
+    # モデルを選択する
+    selected_model = st.sidebar.selectbox("Models", models.keys(), index=0)
+
     # ユーザプロンプトを取得する。ユーザプロンプトが空の場合はここで終了
     user_prompt = st.chat_input("Your prompt")
     if not user_prompt:
@@ -91,7 +101,7 @@ def main():
     st.write(f"Prompt: {user_prompt}")
 
     # Generate image
-    image_url = generate_image(selected_platform, user_prompt)
+    image_url = generate_image(selected_platform, selected_model, user_prompt)
 
     # Display the image
     image = requests.get(image_url)
