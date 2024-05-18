@@ -1,8 +1,13 @@
-# interface-prototype.py
+# prototype_app2.py
 # 観光推薦アプリのGUIのプロトタイプ
 
 # Streamlit: https://www.streamlit.io/
 import streamlit as st
+
+# Snowflake and Snowpark
+import snowflake.connector
+import snowflake.snowpark as snowpark
+import snowflake.cortex as cortex
 
 # Replicate library
 import replicate
@@ -12,11 +17,14 @@ import folium
 from streamlit_folium import st_folium
 
 # general libraries
-from PIL import Image
-import json 
+import pandas as pd
+import json
 import datetime
 import time
 import os
+
+# 接続するSnowflake環境を指定する
+ENVIRONMENT = "SnowflakeProd"
 
 # Default latitude/longitude
 default_latitude = 37.77493
@@ -29,6 +37,22 @@ def init():
 
     # ReplicateとOpenAIのAPIキーを環境変数に設定する
     os.environ["REPLICATE_API_TOKEN"] = st.secrets["Replicate"]["apikey"]
+
+# ローカルPython環境からSnowflakeに接続するための関数
+@st.cache_resource(ttl=7200)
+def connect_snowflake():
+    # Snowflakeに接続する
+    # Snowflakeの接続情報はStreamlitのシークレット(.streamlit/secret.toml)に保存しておく
+    connection = snowflake.connector.connect(
+        user=st.secrets[ENVIRONMENT]["user"],
+        password=st.secrets[ENVIRONMENT]["password"],
+        account=st.secrets[ENVIRONMENT]["account"],
+        role=st.secrets[ENVIRONMENT]["role"],
+        warehouse=st.secrets[ENVIRONMENT]["warehouse"])
+
+    # Snowparkセッションを作成する
+    session = snowpark.Session.builder.configs({"connection": connection}).create()
+    return session 
 
 # JSONをファイルから読み込む
 def read_json(filename: str) -> dict:
@@ -85,7 +109,7 @@ def display_activity(placeholder, activity: dict, next_activity: dict):
         interval_hour = 24 - dt1.hour
         if next_activity is not None:
             dt2 = datetime_parse(next_activity["datetime"])
-            interval_hour = dt2.hour - dt1.hour
+            interval_hour = (dt2 - dt1).total_seconds() // 3600
         start_time_str = dt1.strftime("%I:00 %p")
         
         # 左側に画像を表示
@@ -129,7 +153,7 @@ def generate_image(activity):
     return output[0]
 
 # スライダーとアクティビティを連動でアニメーションさせる
-def animation_sliders(activities, sleep_time):
+def animation_sliders(activities):
     # コンポーネントごとにst.empty()でプレースホルダを割り当てる
     placeholder1 = st.empty() # スライダー
     placeholder2 = st.empty() # アクティビティ
@@ -138,7 +162,16 @@ def animation_sliders(activities, sleep_time):
     dt_start = datetime_parse(activities[0]["datetime"])
     dt_end = datetime_parse(activities[-1]["datetime"])
     # dt_startとdt_endの間に何時間あるかを計算する
-    interval_hour = (dt_end - dt_start).seconds // 3600
+    interval_hour = (dt_end - dt_start).total_seconds() // 3600
+    if interval_hour == 0:
+        interval_hour = 1
+
+    # アニメーションの更新間隔を設定する。すべてのアクティビティを120秒で表示する
+    sleep_time = 120 // interval_hour
+    if sleep_time < 1:
+        sleep_time = 1
+    if sleep_time > 20:
+        sleep_time = 20
 
     # sleep_time秒ごとに表示を更新。ループアニメーションさせる
     cursor = 0
@@ -182,20 +215,118 @@ def animation_sliders(activities, sleep_time):
         cursor = (cursor + 1) % (interval_hour + 1)
         loop_count += 1
 
+# 文字列をエスケープする: SQL用
+def escape_string_for_sql(s):
+    return s.replace("'", "''")
+
+# 文字列をエスケープする: JSON用
+def escape_string_for_json(s):
+    return s.replace('"', '\\"')
+
+# Snowflakeからレストランデータを取得する
+def get_restaurant_data_from_snowflake(name, cuisine):
+    # Snowflakeに接続する
+    session = connect_snowflake()
+    # SQLを実行してデータを取得する
+    name = escape_string_for_sql(name)
+    cuisine = escape_string_for_sql(cuisine)
+    df_sql = session.sql("SELECT * FROM TOURISM.PUBLIC.CL_RESTAURANTS_FINALIZED WHERE NAME = '{}' AND CUISINE = '{}' LIMIT 1".format(name, cuisine)).to_pandas()
+    return df_sql
+
+# キャッチフレーズと詳細な説明を生成する
+def generate_description(data, visit_time):
+    name = data['NAME'][0]
+    cuisine = data['CUISINE'][0]
+    summary = data['WEB_SUMMARY'][0]
+    prompt = f'Generate a catchphrase and detailed description for this restaurant. Restaurant information is follows: {{ "name": "{name}", "cuisine": "{cuisine}", "visit_time": "{visit_time}", "web_summary": "{summary}" }} Your output should be formatted as follows: {{ "catchphrase": "...", "description": "..." }}'
+    prompt = escape_string_for_sql(prompt)
+
+    # Snowflake Coretex APIを呼び出してテキストを生成する
+    session = connect_snowflake()
+    selected_model = "snowflake-arctic"
+    cmd = f"select snowflake.cortex.complete('{selected_model}', [{{'role': 'user', 'content': '{prompt}'}}], {{'temperature': 0.3}}) as RESPONSE"
+    df_response = session.sql(cmd).collect()
+    json_response = json.loads(df_response[0]["RESPONSE"])
+    return json_response['choices'][0]['messages']
+
+# 日時文字列を正規化する
+def detetime_str_normalization(datetime_str: str):
+    # 1/1 09:00 -> 2022-01-01T12:00:00Z
+    # datetimeでパースしてから、UTCに変換する
+    dt = datetime.datetime.strptime(datetime_str, '%m/%d %H:%M')
+    dt = dt.replace(year=2024)
+    dt = dt.astimezone(datetime.timezone.utc)
+    return dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+# アクティビティの情報を生成する
+def generate_activities(filename: str) -> list:
+    # ファイルからアクティビティの情報を読み込む
+    restaurants_df = pd.read_csv(filename)
+
+    # データ生成の進捗表示
+    placeholder1 = st.empty()
+    with placeholder1.container():
+        header_str = "Generating plans."
+        st.subheader(header_str)
+        st.progress(0.0)
+
+    # restaurant_dfに行先となるレストランの情報が格納されている。1行づつ処理していく
+    activities = []
+    for index, row in restaurants_df.iterrows():
+        # name, cuisine, visit_timeを取得する
+        name = row['NAME']
+        cuisine = row['CUISINE']
+        visit_time = row['VISIT_TIME']
+
+        # Snowflakeからレストランデータを取得する
+        restaurant_data = get_restaurant_data_from_snowflake(name, cuisine)
+
+        # レストランデータからキャッチフレーズと詳細な説明を生成する
+        response = generate_description(restaurant_data, visit_time)
+
+        try:
+            # 生成した結果をJSONに変換する
+            description = json.loads(response)
+            
+            # データをdictに整理する
+            activity = dict()
+            activity["type"] = "meal"
+            activity["title"] = description["catchphrase"]
+            activity["description"] = description["description"]
+            activity["url"] = restaurant_data["WEBSITE"][0]
+            activity["datetime"] = detetime_str_normalization(visit_time)
+            activity["location"] = {
+                "name": name,
+                "latitude": restaurant_data["LATITUDE"][0],
+                "longitude": restaurant_data["LONGITUDE"][0]
+            }
+            activities.append(activity)
+        except Exception as e:
+            continue
+
+        # 進捗を更新する
+        with placeholder1.container():
+            header_str = "Generating plans."
+            for _ in range(index + 1):
+                header_str += "."
+            st.subheader(header_str)
+            st.progress((index + 1) / len(restaurants_df))
+
+    # 進捗を完了にする
+    placeholder1.empty()
+
+    return activities
+
 # Main function
 def main():
     # Streamlitの初期化
     init()
 
-    # JSONファイルの読み込み
-    json_obj = read_json("stub/dummy-input.json")
+    # アクティビティの情報を生成する
+    activities = generate_activities("temp/restaurants_result_df.csv")
 
-    # Create a map and display it
-    # map = create_map(json_obj["activities"])
-    # display_map(map)
-    
     # すべてのアクティビティを表示
-    animation_sliders(json_obj["activities"], 2)
+    animation_sliders(activities)
 
 if __name__ == "__main__":
     main()

@@ -28,6 +28,7 @@ def generate_prompt(situations):
     return f"""
     Create a photorealistic image of the following situations: {situations}.
     """
+
 # Replicate APIを呼び出して画像を生成する
 def generate_image_replicate(user_prompt):
     input = {
