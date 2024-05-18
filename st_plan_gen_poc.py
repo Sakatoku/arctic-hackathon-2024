@@ -91,7 +91,6 @@ filename = 'temp/restaurants_result_df.csv'
 df = pd.read_csv(filename)
 df
 
-# データ生成の進捗表示
 generation_progress = st.progress(0.0)
 
 # dfに行先リストが格納されている。1行づつ処理していく
