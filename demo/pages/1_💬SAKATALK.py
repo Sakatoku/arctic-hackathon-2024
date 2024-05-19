@@ -8,13 +8,13 @@ import snowflake.snowpark as snowpark
 
 from services.inquiry_plan_2 import get_requested_df
 
-second_page_name = "2_get_tour_plan.py"
+second_page_name = "2_✈️PLAN.py"
 avatar_image_name = "./resources/imgs/sakatoku.png"
 MAX_CONV_LENGTH = 22
 
 # Initialize Streamlit
 def init():
-    st.set_page_config(page_title="SAKATALK | Travel Agency", page_icon="🌍️", layout="wide", initial_sidebar_state="auto")
+    st.set_page_config(page_title="SakArctic Travel Agency", page_icon="🌍️", layout="wide", initial_sidebar_state="auto")
     st.image("./resources/imgs/logo.svg")
 
     # st.caption("This application is for hearing information for San Francisco travel plan consideration.")

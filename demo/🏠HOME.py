@@ -2,7 +2,7 @@ import streamlit as st
 
 ## ページ表示
 
-st.set_page_config(page_title="SAKATALK | Travel Agency", page_icon="🌍️", layout="wide", initial_sidebar_state="auto")
+st.set_page_config(page_title="SakArctic Travel Agency", page_icon="🌍️", layout="wide", initial_sidebar_state="auto")
 
 col1, col2 = st.columns([4, 1])
 with col1:
@@ -24,7 +24,7 @@ with col2:
         }
     </style>
     ''', unsafe_allow_html=True)
-    st.page_link("pages/1_get_customer_request.py", label="Let's go to your travel!", icon="🌍️")
+    st.page_link("pages/1_💬SAKATALK.py", label="Let's go to your travel!", icon="🌍️")
 
 '''
 ---
