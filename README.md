@@ -14,8 +14,7 @@ So, how can we, who might not be seasoned travelers, enjoy our journeys to the f
 
 We have developed an innovative application that leverages diverse datasets from the Snowflake Marketplace and the Internet, utilizing Large Language Models (LLMs) to craft personalized travel plans tailored to a wide array of preferences and needs.
 By using this application, you can enjoy comfortable, safe, and enriching travels.  
-By using this application, you will be able to enjoy comfortable, safe, and rewarding travels.  
-Join us in exploring the world with our cutting-edge technology. We look forward to meeting you at the Snowflake Data Cloud Summit 2024!
+Join us in exploring the world with our cutting-edge technology. We look forward to meeting you at the Snowflake Data Cloud Summit 2024!  
 
 日本が島国であるということは、多くの日本人が口にします。多くの日本人は自身の出身地に根付いた暮らしをしており、すべての人が国際的に活動しているわけではありません。  
 しかし、COVID-19の危機を乗り越えて、世界に旅立つ日本人が増えてきました。それがデータクラウドの可能性に魅了されたエンジニアたちであれば、なおさら。  
@@ -25,6 +24,8 @@ Join us in exploring the world with our cutting-edge technology. We look forward
 私たちは、Snowflake Marketplaceやインターネット上に存在する多様なデータセットを活用し、LLM(大規模言語モデル)を通じて、多様なニーズに対応できるパーソライズされた旅行プランを提案するアプリケーションを実現しました。  
 このアプリケーションを用いることで、快適で安全、そして実りのある旅を楽しめることでしょう。  
 私たちの最新のテクノロジーと一緒に世界を探検してください。Snowflake Data Cloud Summit 2024で皆様にお会いできることを楽しみにしています！  
+
+![Concept Art](https://raw.githubusercontent.com/Sakatoku/arctic-hackathon-2024/resources/imgs/concept-art.jpg)
 
 ## How does this application work
 
