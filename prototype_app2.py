@@ -202,7 +202,7 @@ def generate_prompt(situations):
 def generate_image(activity):
     # ダミーアクティビティの場合は画像を生成しないであらかじめ用意した画像を返す
     if activity["type"] == "stay":
-        return "temp/midnight.jpg"
+        return "resource/imgs/midnight.jpg"
 
     # Replicate APIへの入力
     prompt = generate_prompt(activity)
@@ -220,7 +220,7 @@ def generate_image(activity):
         return output[0]
     except replicate.exceptions.ModelError as e:
         print(f"Error: {e}")
-        return "temp/error.jpg"
+        return "resource/imgs/error.jpg"
 
 # スライダーのコールバック
 def update_slider():
@@ -307,10 +307,7 @@ def animation_sliders():
         # ループ変数を更新。深夜ならスキップする
         cursor_hop = 1
         if activity["type"] == "stay":
-            if next_activity is not None:
-                dt_next = datetime_parse(next_activity["datetime"])
-                if dt_cur.day < dt_next.day:
-                    cursor_hop = (dt_next - dt_cur).total_seconds() // 3600
+
         st.session_state.cursor = (st.session_state.cursor + cursor_hop) % (interval_hour + 1)
         st.session_state.loop_count += 1
 
