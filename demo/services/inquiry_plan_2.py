@@ -4,6 +4,7 @@ from getpass import getpass
 from typing import Dict, Tuple
 
 import pandas as pd
+import streamlit as st
 from snowflake.snowpark import Session
 from snowflake.snowpark.functions import call_udf, col, flatten, lit, not_, concat
 from snowflake.snowpark.types import StructType, StructField, StringType, IntegerType
@@ -28,7 +29,7 @@ def get_session() -> Session:
 
     return session
 
-def get_request() -> str:
+def get_dummy_request() -> str:
     request = '''
     {
     "destination":"san-francisco"
@@ -99,7 +100,7 @@ def get_tour_spots(session: Session, request: str):
     return converted_response
 
 
-def extract_record(session: Session, table_name: str, category_col_name: str, spots: Dict[str, str], request: str) -> pd.DataFrame:
+def extract_record(session: Session, table_name: str, category_col_name: str, spots: Dict[str, str], request_sentence: str) -> pd.DataFrame:
     result_df = []
     selected_names = set()
     for spot_k, spot_v in spots.items():
@@ -109,8 +110,7 @@ def extract_record(session: Session, table_name: str, category_col_name: str, sp
             df = df.where(not_(col("name").in_(selected_names)))
         if df.count() == 0:
             continue
-        df = df.with_column("costomer_pref_v", call_udf("snowflake.cortex.EMBED_TEXT_768", lit('snowflake-arctic-embed-m'), 
-                                                        call_udf("snowflake.cortex.complete", lit('snowflake-arctic'), concat(lit("Please describe in sentences the customer attributes especially for activities and food preferences in English based on the following JSON request:"), lit(request)))))
+        df = df.with_column("costomer_pref_v", call_udf("snowflake.cortex.EMBED_TEXT_768", lit('snowflake-arctic-embed-m'), lit(request_sentence)))
         #df = df.with_column("web_summary_v", call_udf("snowflake.cortex.EMBED_TEXT_768", lit('snowflake-arctic-embed-m'), col("web_summary")))
         df = df.with_column("cos_sim", call_udf("VECTOR_COSINE_SIMILARITY", col("costomer_pref_v"), col("embeded_web_summary")))
         df = df.with_column("score", col("cos_sim")+(1-(col("sum_crime")-1291)/(68930-1291))*0.05)
@@ -125,16 +125,23 @@ def extract_record(session: Session, table_name: str, category_col_name: str, sp
     return pd.concat(result_df, ignore_index=True).sort_values(by=["VISIT_TIME"], ascending=[True])
 
 def get_requested_df(session: Session, request: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    total_steps = 4
+    progress_bar = st.progress(0, text="Extracting in progress using llm and your preferences. Please wait.")
     for _ in range(3):
         restaurants_list = get_restaurants_list(session, request)
+        progress_bar.progress(1.0 / total_steps)
         tour_spots = get_tour_spots(session, request)
-        if restaurants_list is not None:
-            break
-        if tour_spots is not None:
+        progress_bar.progress(2.0 / total_steps)
+        if restaurants_list is not None and tour_spots is not None:
             break
 
-    restaurants_result_df = extract_record(session, "tourism.public.cl_restaurants_finalized", "CUISINE", restaurants_list, request)
-    tour_result_df = extract_record(session, "tourism.public.tourism_spots_finalized", "CATEGORY", tour_spots, request)
+    request_sentence = session.sql(f"select snowflake.cortex.complete('snowflake-arctic', 'Please describe in sentences the customer attributes especially for activities and food preferences in English based on the following JSON request:{request}') as response").to_pandas()["RESPONSE"].iloc[0]
+    print(request_sentence)
+
+    restaurants_result_df = extract_record(session, "tourism.public.cl_restaurants_finalized", "CUISINE", restaurants_list, request_sentence)
+    progress_bar.progress(3.0 / total_steps)
+    tour_result_df = extract_record(session, "tourism.public.tourism_spots_finalized", "CATEGORY", tour_spots, request_sentence)
+    progress_bar.progress(4.0 / total_steps)
 
     print(restaurants_result_df)
     print(tour_result_df)
@@ -146,5 +153,5 @@ def get_requested_df(session: Session, request: str) -> Tuple[pd.DataFrame, pd.D
 
 if __name__ == "__main__":
     session = get_session()
-    request = get_request()
+    request = get_dummy_request()
     get_requested_df(session, request)
