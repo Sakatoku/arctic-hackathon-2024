@@ -1,4 +1,5 @@
 import ast
+import time
 from bs4 import BeautifulSoup
 
 import streamlit as st
@@ -209,6 +210,7 @@ def main():
             st.snow()
 
             st.session_state.customer_request = result["request"] 
+            time.sleep(1)
             st.switch_page(f"pages/{second_page_name}")
 
 if __name__ == '__main__':
