@@ -13,8 +13,11 @@ MAX_CONV_LENGTH = 14
 
 # Initialize Streamlit
 def init():
-    st.set_page_config(page_title="SakArctic Travel Agency", page_icon=":snowflake:", layout="wide", initial_sidebar_state="expanded")
-    st.title(":blue[SakA]rctic Travel Agency")
+    st.set_page_config(page_title="SakArctic Travel Agency", page_icon="🌍️", layout="wide", initial_sidebar_state="auto")
+    st.image("resources/imgs/logo.png", width=800)
+    # st.set_page_config(page_title="Arctic", page_icon=":snowflake:", layout="wide", initial_sidebar_state="collapsed")
+    # st.title(":blue[SakA]rctic")
+
     st.caption("This application is for hearing information for San Francisco travel plan consideration.")
     st.divider()
     st.sidebar.title('Json')
