@@ -13,10 +13,26 @@ MAX_CONV_LENGTH = 14
 
 # Initialize Streamlit
 def init():
-    st.set_page_config(page_title="SakArctic Travel Agency", page_icon="🌍️", layout="wide", initial_sidebar_state="auto")
-    st.image("resources/imgs/logo.png", width=800)
-    # st.set_page_config(page_title="Arctic", page_icon=":snowflake:", layout="wide", initial_sidebar_state="collapsed")
-    # st.title(":blue[SakA]rctic")
+    st.set_page_config(page_title="SAKATALK | Travel Agency", page_icon="🌍️", layout="wide", initial_sidebar_state="auto")
+    st.markdown('''
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Josefin+Slab:ital,wght@0,100..700;1,100..700&family=Shalimar&display=swap" rel="stylesheet">
+        <style>
+        .app-title {
+        font-family: "Josefin Slab", serif;
+        }
+        .app-title .app_name{
+        color: #249edc;
+        }
+        .app-title .travel{
+        font-family: "Shalimar", serif;
+        font-size : 2.9rem;
+        letter-spacing: 0.1em;
+        }
+        </style>
+        <h1 class="app-title"><span class="app_name">SAKATALK</span> | <span class="travel">Travel Agency</span><h1>
+    ''', unsafe_allow_html=True)
 
     st.caption("This application is for hearing information for San Francisco travel plan consideration.")
     st.divider()
@@ -45,6 +61,9 @@ def init():
                 .stChatMessage:nth-child(even){
                     background: #eee;
                 }
+                .stChatMessage:nth-child(even) p{
+                    color: #333 !important;
+                }
                 </style>
     ''', unsafe_allow_html=True)
 
@@ -66,28 +85,38 @@ def connect_snowflake():
 
 # Arctic実行用の関数
 def get_response(session, messages):
-    response = session.sql(f'''
+    sql = f'''
     SELECT SNOWFLAKE.CORTEX.COMPLETE('snowflake-arctic',
         {messages},
         {{
             'temperature': 0.3,
             'top_p': 0.9
         }});
-        ''').to_pandas().iloc[0,0]
+    '''
+    response = session.sql(sql).to_pandas().iloc[0,0]
     # レスポンスを変換
     response = ast.literal_eval(response)
     response = response["choices"][0]["messages"]
     soup = BeautifulSoup(response, 'html.parser')
-    question = soup.find("question").contents[0]
-    request = soup.find("request").contents[0]
-    request = request.strip()
-    finish = soup.find("finish")
-    result = {
-        "response": response,
-        "request": request,
-        "question": question,
-        "finish": finish
-    }
+    # 結果の形式判定
+    if not soup.find("question") or not soup.find("request"):
+        result = {
+            "response": False,
+            "request": False,
+            "question": False,
+            "finish": False
+        }
+    else:
+        question = soup.find("question").contents[0]
+        request = soup.find("request").contents[0]
+        request = request.strip()
+        finish = soup.find("finish")
+        result = {
+            "response": response,
+            "request": request,
+            "question": question,
+            "finish": finish
+        }
     return result
 
 
@@ -122,7 +151,6 @@ def main():
             <request>{ "destination": "san-francisco", "purpose": "", "traveler": { "age": "", "number_of_people": "" }, "travel_dates": {"start_date": "", "end_date": ""}, "budget": "", "food_preferences": "", "activity_preferences": ""} </request>
         '''
         st.session_state.messages.append({"role": "user", "content": first_prompt})
-
         messages=[]
         for m in st.session_state.messages:
             messages.append({"role": m["role"], "content": m["content"]})
@@ -158,17 +186,22 @@ def main():
         # Arctic用に会話履歴を作成
         messages=[]
         for m in st.session_state.messages:
-            messages.append({"role": m["role"], "content": m["content"]})
+            messages.append({"role": m["role"], "content": f'"{m["content"]}"'})
 
         # Arctic実行
         result = get_response(session, messages)
-        st.session_state.messages.append({"role": "assistant", "content": result["response"]})
-        st.session_state.messages_display.append({"role": "assistant", "content": result["question"]})
-
-        # 入力内容を表示
-        with st.chat_message("assistant", avatar=avatar_image_name):
-            st.sidebar.json(result["request"])
-            st.markdown(result["question"])
+        if result['response']:
+            st.session_state.messages.append({"role": "assistant", "content": result["response"]})
+            st.session_state.messages_display.append({"role": "assistant", "content": result["question"]})
+            # 入力内容を表示
+            with st.chat_message("assistant", avatar=avatar_image_name):
+                st.sidebar.json(result["request"])
+                st.markdown(result["question"])
+        else:
+            with st.chat_message("assistant", avatar=avatar_image_name):
+                error_msg = 'I did not understand it well. Could you please answer again?'
+                st.markdown(error_msg)
+                st.session_state.messages_display.append({"role": "assistant", "content": error_msg})
 
         # 完了判定
         if result['finish'] or len(st.session_state.messages) > MAX_CONV_LENGTH:
