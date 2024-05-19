@@ -75,7 +75,7 @@ def get_restaurants_list(session: Session, request: str):
     print(categories)
     output_format = '{"MM/DD hh:mm": "category1", "MM/DD hh:mm": "category2"}'
     response = df.select(call_udf("snowflake.cortex.complete", 
-                            lit('snowflake-arctic'), 
+                            lit('snowflake-arctic'),
                             lit('顧客属性<customer_requests>をもとに、レストランカテゴリ<categories>のリストの中から日数分×朝(8時)・昼(12時)・晩(18時)分のカテゴリを選択して、出力形式<output_format>に則ってJSONを出力しなさい。文章ではなく、<output_format>に則った返答をすることに必ず則ってください。\\n'
                                 f'<customer_requests>{request}</customer_requests>\\n<categories>{categories}</categories>\\n<output_format>{output_format}</output_format>')
                             ).alias('response')).limit(1).to_pandas()["RESPONSE"].iloc[0]
@@ -100,20 +100,24 @@ def get_tour_spots(session: Session, request: str):
     return converted_response
 
 
-def extract_record(session: Session, table_name: str, category_col_name: str, spots: Dict[str, str], request_sentence: str) -> pd.DataFrame:
+def extract_record(session: Session, table_name: str, category_col_name: str, spots: Dict[str, str], request_description: str) -> pd.DataFrame:
     result_df = []
     selected_names = set()
+    
+    df_base = session.table(table_name)
+    df_base = df_base.with_column("costomer_pref_v", call_udf("snowflake.cortex.EMBED_TEXT_768", lit('snowflake-arctic-embed-m'), lit(request_description)))
+    df_base = df_base.with_column("cos_sim", call_udf("VECTOR_COSINE_SIMILARITY", col("costomer_pref_v"), col("embeded_web_summary")))
+    df_base = df_base.with_column("score", col("cos_sim")+(1-(col("sum_crime")-1291)/(68930-1291))*0.05)
+    df_base.write.mode("overwrite").save_as_table("tourism.public.temp_table", table_type="temporary")
     for spot_k, spot_v in spots.items():
-        df = session.table(table_name)
+        df = session.table("tourism.public.temp_table")
         df = df.where(col(category_col_name)==spot_v)
         if selected_names:
             df = df.where(not_(col("name").in_(selected_names)))
         if df.count() == 0:
             continue
-        df = df.with_column("costomer_pref_v", call_udf("snowflake.cortex.EMBED_TEXT_768", lit('snowflake-arctic-embed-m'), lit(request_sentence)))
+        # df = df.with_column("costomer_pref_v", call_udf("snowflake.cortex.EMBED_TEXT_768", lit('snowflake-arctic-embed-m'), lit(request_description)))
         #df = df.with_column("web_summary_v", call_udf("snowflake.cortex.EMBED_TEXT_768", lit('snowflake-arctic-embed-m'), col("web_summary")))
-        df = df.with_column("cos_sim", call_udf("VECTOR_COSINE_SIMILARITY", col("costomer_pref_v"), col("embeded_web_summary")))
-        df = df.with_column("score", col("cos_sim")+(1-(col("sum_crime")-1291)/(68930-1291))*0.05)
         df = df.sort(col("score").desc()).limit(1)
         df = df.with_column("visit_time", lit(spot_k))
         df.collect()
@@ -123,6 +127,10 @@ def extract_record(session: Session, table_name: str, category_col_name: str, sp
         result_df.append(pd_df)
         
     return pd.concat(result_df, ignore_index=True).sort_values(by=["VISIT_TIME"], ascending=[True])
+
+# 文字列をエスケープする: SQL用
+def escape_string_for_sql(s):
+    return s.replace("'", "''")
 
 def get_requested_df(session: Session, request: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
     total_steps = 4
@@ -135,12 +143,12 @@ def get_requested_df(session: Session, request: str) -> Tuple[pd.DataFrame, pd.D
         if restaurants_list is not None and tour_spots is not None:
             break
 
-    request_sentence = session.sql(f"select snowflake.cortex.complete('snowflake-arctic', 'Please describe in sentences the customer attributes especially for activities and food preferences in English based on the following JSON request:{request}') as response").to_pandas()["RESPONSE"].iloc[0]
-    print(request_sentence)
+    request_description = session.sql(f"select snowflake.cortex.complete('snowflake-arctic', 'Please describe in sentences the customer attributes especially for activities and food preferences in English based on the following JSON request:{request}') as response").to_pandas()["RESPONSE"].iloc[0]
+    print(request_description)
 
-    restaurants_result_df = extract_record(session, "tourism.public.cl_restaurants_finalized", "CUISINE", restaurants_list, request_sentence)
+    restaurants_result_df = extract_record(session, "tourism.public.cl_restaurants_finalized", "CUISINE", restaurants_list, request_description)
     progress_bar.progress(3.0 / total_steps)
-    tour_result_df = extract_record(session, "tourism.public.tourism_spots_finalized", "CATEGORY", tour_spots, request_sentence)
+    tour_result_df = extract_record(session, "tourism.public.tourism_spots_finalized", "CATEGORY", tour_spots, request_description)
     progress_bar.progress(4.0 / total_steps)
 
     print(restaurants_result_df)
