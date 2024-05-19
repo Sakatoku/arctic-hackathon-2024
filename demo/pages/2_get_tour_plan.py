@@ -32,8 +32,11 @@ default_longitude = -122.41942
 
 # Initialize Streamlit
 def init():
-    st.set_page_config(page_title="Arctic Tourism Guide", page_icon=":airplane_departure:", layout="wide")
-    st.title("Arctic Tourism Guide")
+    st.set_page_config(page_title="SakArctic Travel Agency", page_icon="🌍️", layout="wide", initial_sidebar_state="auto")
+    st.image("resources/imgs/logo.png", width=800)
+    st.caption("This application is for hearing information for San Francisco travel plan consideration.")
+    # st.set_page_config(page_title="Arctic Tourism Guide", page_icon=":airplane_departure:", layout="wide")
+    # st.title("Arctic Tourism Guide")
 
     # ReplicateとOpenAIのAPIキーを環境変数に設定する
     os.environ["REPLICATE_API_TOKEN"] = st.secrets["Replicate"]["apikey"]

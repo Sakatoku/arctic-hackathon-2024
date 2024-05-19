@@ -17,8 +17,10 @@ second_page_name = "2_get_tour_plan.py"
 
 # Initialize Streamlit
 def init():
-    st.set_page_config(page_title="Arctic", page_icon=":snowflake:", layout="wide", initial_sidebar_state="collapsed")
-    st.title(":blue[SakA]rctic")
+    st.set_page_config(page_title="SakArctic Travel Agency", page_icon="🌍️", layout="wide", initial_sidebar_state="auto")
+    st.image("resources/imgs/logo.png", width=800)
+    # st.set_page_config(page_title="Arctic", page_icon=":snowflake:", layout="wide", initial_sidebar_state="collapsed")
+    # st.title(":blue[SakA]rctic")
     st.caption("This application is for hearing information for San Francisco travel plan consideration.")
     st.divider()
     st.sidebar.title('Json')

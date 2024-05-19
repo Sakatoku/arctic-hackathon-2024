@@ -1,0 +1,7 @@
+streamlit
+streamlit-folium
+snowflake-connector-python
+snowflake-snowpark-python
+pandas
+replicate
+beautifulsoup4
