@@ -27,6 +27,18 @@ with col1:
     ''', unsafe_allow_html=True)
 
 with col2:
+    st.markdown('''
+    <style>
+        .stPageLink a{
+          background-color: #249edc;
+          transition: all .3s ease;
+          height: 55px;
+        }
+        .stPageLink a:hover{
+          background-color: #205f7f;
+        }
+    </style>
+    ''', unsafe_allow_html=True)
     st.page_link("pages/1_get_customer_request.py", label="Let's go to your travel!", icon="🌍️")
 
 '''
