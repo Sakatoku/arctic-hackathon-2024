@@ -14,8 +14,9 @@ MAX_CONV_LENGTH = 22
 
 # Initialize Streamlit
 def init():
-    st.set_page_config(page_title="SakArctic Travel Agency", page_icon="🌍️", layout="wide", initial_sidebar_state="auto")
+    st.set_page_config(page_title="SakArctic Travel Agency", page_icon="🌍️", layout="wide", initial_sidebar_state="collapsed")
     st.image("./resources/imgs/logo.svg")
+    st.markdown("🏠 HOME  >>  💬 **SAKATALK**  >>  ✈ PLAN")
 
     # st.caption("This application is for hearing information for San Francisco travel plan consideration.")
     st.divider()
@@ -31,20 +32,20 @@ def init():
                 .stChatMessage p{
                     width: fit-content;
                 }
-                .stChatMessage:nth-child(even){
+                .stChatMessage:nth-child(odd){
                     background: #249EDC;
                     margin: 0 0 0 auto;
                 }
-                .stChatMessage:nth-child(even) p{
+                .stChatMessage:nth-child(odd) p{
                     color: #fff !important;
                 }
-                .stChatMessage:nth-child(even) div:has(svg){
+                .stChatMessage:nth-child(odd) div:has(svg){
                     display: none;
                 }
-                .stChatMessage:nth-child(odd){
+                .stChatMessage:nth-child(even){
                     background: #eee;
                 }
-                .stChatMessage:nth-child(odd) p{
+                .stChatMessage:nth-child(even) p{
                     color: #333 !important;
                 }
                 </style>
@@ -53,14 +54,13 @@ def init():
 # ローカルPython環境からSnowflakeに接続するための関数
 @st.cache_resource(ttl=7200)
 def connect_snowflake():
-    # Snowflakeに接続する
-    # Snowflakeの接続情報はStreamlitのシークレット(.streamlit/secret.toml)に保存しておく
+    # Snowflakeの接続情報はhome.pyでセッションステートに保存されたものを使う
     connection = snowflake.connector.connect(
-        user=st.secrets["SnowflakeProd"]["user"],
-        password=st.secrets["SnowflakeProd"]["password"],
-        account=st.secrets["SnowflakeProd"]["account"],
-        role=st.secrets["SnowflakeProd"]["role"],
-        warehouse=st.secrets["SnowflakeProd"]["warehouse"])
+        user=st.session_state.snowflake_secrets["user"],
+        password=st.session_state.snowflake_secrets["password"],
+        account=st.session_state.snowflake_secrets["account"],
+        role=st.session_state.snowflake_secrets["role"],
+        warehouse=st.session_state.snowflake_secrets["warehouse"])
 
     # Snowparkセッションを作成する
     session = snowpark.Session.builder.configs({"connection": connection}).create()

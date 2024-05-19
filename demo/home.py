@@ -1,12 +1,18 @@
 import streamlit as st
 
-## ページ表示
+# ページ表示
+st.set_page_config(page_title="SakArctic Travel Agency", page_icon="🌍️", layout="wide", initial_sidebar_state="collapsed")
 
-st.set_page_config(page_title="SakArctic Travel Agency", page_icon="🌍️", layout="wide", initial_sidebar_state="auto")
-
+# シークレットの初期化
+with st.sidebar:
+    token_sets = [ "Snowflake", "Reserved1", "Reserved2" ]
+    token_set = st.selectbox("Select Secrets", token_sets)
+    st.session_state.snowflake_secrets = st.secrets[token_set]
+  
 col1, col2 = st.columns([4, 1])
 with col1:
     st.image("./resources/imgs/logo.svg")
+    st.markdown("🏠 **HOME**  >>  💬 SAKATALK  >>  ✈ PLAN")
 
 with col2:
     st.markdown('''
@@ -34,13 +40,12 @@ It listens to the user's requests in a chat format and creates a trip plan based
 
 ## Sample UI
 '''
+
 col1, col2 = st.columns([1, 4])
 with col1:
-  st.caption('Chat UI')
-  st.image("./resources/imgs/app_image_chat.png")
+    st.caption('Chat UI')
+    st.image("./resources/imgs/app_image_chat.png")
 
 with col2:
-  st.caption('Plan UI')
-  st.image("./resources/imgs/app_image_plan.png")
-
-
+    st.caption('Plan UI')
+    st.image("./resources/imgs/app_image_plan.png")

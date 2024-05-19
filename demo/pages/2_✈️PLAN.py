@@ -25,17 +25,15 @@ import os
 
 from services.inquiry_plan_2 import get_requested_df
 
-# 接続するSnowflake環境を指定する
-ENVIRONMENT = "SnowflakeProd"
-
 # Default latitude/longitude
 default_latitude = 37.77493
 default_longitude = -122.41942
 
 # Initialize Streamlit
 def init():
-    st.set_page_config(page_title="SakArctic Travel Agency", page_icon="🌍️", layout="wide", initial_sidebar_state="auto")
+    st.set_page_config(page_title="SakArctic Travel Agency", page_icon="🌍️", layout="wide", initial_sidebar_state="collapsed")
     st.image("./resources/imgs/logo.svg")
+    st.markdown("🏠 HOME  >>  💬 SAKATALK  >>  ✈ **PLAN**")
     st.divider()
 
     # ReplicateとOpenAIのAPIキーを環境変数に設定する
@@ -44,14 +42,13 @@ def init():
 # ローカルPython環境からSnowflakeに接続するための関数
 @st.cache_resource(ttl=7200)
 def connect_snowflake():
-    # Snowflakeに接続する
-    # Snowflakeの接続情報はStreamlitのシークレット(.streamlit/secret.toml)に保存しておく
+    # Snowflakeの接続情報はhome.pyでセッションステートに保存されたものを使う
     connection = snowflake.connector.connect(
-        user=st.secrets[ENVIRONMENT]["user"],
-        password=st.secrets[ENVIRONMENT]["password"],
-        account=st.secrets[ENVIRONMENT]["account"],
-        role=st.secrets[ENVIRONMENT]["role"],
-        warehouse=st.secrets[ENVIRONMENT]["warehouse"])
+        user=st.session_state.snowflake_secrets["user"],
+        password=st.session_state.snowflake_secrets["password"],
+        account=st.session_state.snowflake_secrets["account"],
+        role=st.session_state.snowflake_secrets["role"],
+        warehouse=st.session_state.snowflake_secrets["warehouse"])
 
     # Snowparkセッションを作成する
     session = snowpark.Session.builder.configs({"connection": connection}).create()
