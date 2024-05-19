@@ -210,7 +210,7 @@ def main():
             st.snow()
 
             st.session_state.customer_request = result["request"] 
-            time.sleep(1)
+            time.sleep(4)
             st.switch_page(f"pages/{second_page_name}")
 
 if __name__ == '__main__':
