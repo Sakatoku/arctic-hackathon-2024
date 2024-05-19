@@ -15,27 +15,9 @@ MAX_CONV_LENGTH = 22
 # Initialize Streamlit
 def init():
     st.set_page_config(page_title="SAKATALK | Travel Agency", page_icon="🌍️", layout="wide", initial_sidebar_state="auto")
-    st.markdown('''
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Josefin+Slab:ital,wght@0,100..700;1,100..700&family=Shalimar&display=swap" rel="stylesheet">
-        <style>
-        .app-title {
-        font-family: "Josefin Slab", serif;
-        }
-        .app-title .app_name{
-        color: #249edc;
-        }
-        .app-title .travel{
-        font-family: "Shalimar", serif;
-        font-size : 2.9rem;
-        letter-spacing: 0.1em;
-        }
-        </style>
-        <h1 class="app-title"><span class="app_name">SAKATALK</span> | <span class="travel">Travel Agency</span><h1>
-    ''', unsafe_allow_html=True)
+    st.image("./resources/imgs/logo.svg")
 
-    st.caption("This application is for hearing information for San Francisco travel plan consideration.")
+    # st.caption("This application is for hearing information for San Francisco travel plan consideration.")
     st.divider()
     st.sidebar.title('Json')
 
@@ -49,20 +31,20 @@ def init():
                 .stChatMessage p{
                     width: fit-content;
                 }
-                .stChatMessage:nth-child(odd){
+                .stChatMessage:nth-child(even){
                     background: #249EDC;
                     margin: 0 0 0 auto;
                 }
-                .stChatMessage:nth-child(odd) p{
+                .stChatMessage:nth-child(even) p{
                     color: #fff !important;
                 }
-                .stChatMessage:nth-child(odd) div:has(svg){
+                .stChatMessage:nth-child(even) div:has(svg){
                     display: none;
                 }
-                .stChatMessage:nth-child(even){
+                .stChatMessage:nth-child(odd){
                     background: #eee;
                 }
-                .stChatMessage:nth-child(even) p{
+                .stChatMessage:nth-child(odd) p{
                     color: #333 !important;
                 }
                 </style>
@@ -145,7 +127,7 @@ def main():
             - 過去にした質問と同じ質問や類似した質問は禁止です。
             - userの回答に関して、再確認する必要はありません。
             - 質問はJSONに記載したキーの内容を確認する質問のみとしてください。
-            - 全てのJSONキーの回答が得られた場合は、感謝を伝える文を、<question></question>の中に、JSONは全ての属性を含めて<request></request>の中に、出力の最後に"<finish>finish</finish>"を追加してください。
+            - 全ての回答が得られた場合は、感謝を伝える文を、<question></question>の中に、JSONは全ての属性を含めて<request></request>の中に、出力の最後に"<finish>finish</finish>"を追加してください。
             - 必ず下記のJSONの形式で出力してください。
             - 回答は英語でお願いします。
             # JSON

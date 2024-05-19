@@ -35,28 +35,8 @@ default_longitude = -122.41942
 # Initialize Streamlit
 def init():
     st.set_page_config(page_title="SakArctic Travel Agency", page_icon="🌍️", layout="wide", initial_sidebar_state="auto")
-    st.markdown('''
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Josefin+Slab:ital,wght@0,100..700;1,100..700&family=Shalimar&display=swap" rel="stylesheet">
-        <style>
-        .app-title {
-        font-family: "Josefin Slab", serif;
-        }
-        .app-title .app_name{
-        color: #249edc;
-        }
-        .app-title .travel{
-        font-family: "Shalimar", serif;
-        font-size : 2.9rem;
-        letter-spacing: 0.1em;
-        }
-        </style>
-        <h1 class="app-title"><span class="app_name">SAKATALK</span> | <span class="travel">Travel Agency</span><h1>
-    ''', unsafe_allow_html=True)
-    st.caption("This application is for hearing information for San Francisco travel plan consideration.")
-    # st.set_page_config(page_title="Arctic Tourism Guide", page_icon=":airplane_departure:", layout="wide")
-    # st.title("Arctic Tourism Guide")
+    st.image("./resources/imgs/logo.svg")
+    st.divider()
 
     # ReplicateとOpenAIのAPIキーを環境変数に設定する
     os.environ["REPLICATE_API_TOKEN"] = st.secrets["Replicate"]["apikey"]
