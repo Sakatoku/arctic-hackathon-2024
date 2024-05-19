@@ -5,48 +5,33 @@ from typing import Dict, Tuple
 
 import pandas as pd
 import streamlit as st
+import snowflake.connector
+import snowflake.snowpark as snowpark
 from snowflake.snowpark import Session
 from snowflake.snowpark.functions import call_udf, col, flatten, lit, not_, concat
-from snowflake.snowpark.types import StructType, StructField, StringType, IntegerType
 
-## pip install snowflake-snowpark-python pandas
+@st.cache_resource(ttl=7200)
+def connect_snowflake():
+    # Snowflakeに接続する
+    # Snowflakeの接続情報はStreamlitのシークレット(.streamlit/secret.toml)に保存しておく
+    connection = snowflake.connector.connect(
+        user=st.secrets["Snowflake"]["user"],
+        password=st.secrets["Snowflake"]["password"],
+        account=st.secrets["Snowflake"]["account"],
+        role=st.secrets["Snowflake"]["role"],
+        warehouse=st.secrets["Snowflake"]["warehouse"])
 
-def get_session() -> Session:
-    try:
-        connection_parameters = json.loads(open('./secrets/snowflake_connection.json').read())
-    except:
-        connection_parameters = {
-            "account": input("input accountname: "),
-            "user": input("input username: "),
-            "password": getpass("input password: "),
-            "role": "SYSADMIN",  # optional
-            "warehouse": "COMPUTE_WH",  # optional
-            "database": "TOURISM",  # optional
-            "schema": "PUBLIC",  # optional
-        }  
-
-    session = Session.builder.configs(connection_parameters).create()
-
-    return session
+    # Snowparkセッションを作成する
+    session = snowpark.Session.builder.configs({"connection": connection}).create()
+    return session 
 
 def get_dummy_request() -> str:
     request = '''
-    {
-    "destination":"san-francisco"
-    "purpose":"観光"
-    "traveler":{
-    "age":"20"
-    "number_of_people":"4"
-    }
-    "travel_dates":{
-    "start_date":"2023-06-03"
-    "end_date":"2023-06-04"
-    }
-    "budget":"30万円"
-    "food_preferences":"シーフードと中華料理"
-    "activity_preferences":"海に入りたい"
-    "notes":""
-    }
+        サンフランシスコに友達4人（30代）と観光に行きます。
+        特に、絶景や公園でゆったりや、サンフランシスコの名所に行きたいです。
+        また、日本料理やサンフランシスコ料理を食べたいです。
+
+        予算は100万円で、旅程は6/2から6/4です。
     '''
 
     return request
@@ -160,6 +145,6 @@ def get_requested_df(session: Session, request: str) -> Tuple[pd.DataFrame, pd.D
     return restaurants_result_df, tour_result_df
 
 if __name__ == "__main__":
-    session = get_session()
+    session = connect_snowflake()
     request = get_dummy_request()
     get_requested_df(session, request)

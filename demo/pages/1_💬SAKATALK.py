@@ -6,8 +6,6 @@ import streamlit as st
 import snowflake.connector
 import snowflake.snowpark as snowpark
 
-from services.inquiry_plan_2 import get_requested_df
-
 second_page_name = "2_✈️PLAN.py"
 avatar_image_name = "./resources/imgs/sakatoku.png"
 MAX_CONV_LENGTH = 22
