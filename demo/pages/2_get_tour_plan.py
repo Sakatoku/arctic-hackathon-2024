@@ -23,6 +23,8 @@ import datetime
 import time
 import os
 
+from services.inquiry_plan_2 import get_requested_df
+
 # 接続するSnowflake環境を指定する
 ENVIRONMENT = "SnowflakeProd"
 
@@ -454,6 +456,8 @@ def main():
     init()
 
     # アクティビティの情報を生成する
+    session = connect_snowflake()
+    st.session_state.restaurants_df, st.session_state.tours_df = get_requested_df(session, st.session_state.customer_request)
     st.session_state.activities = generate_activities("temp/restaurants_result_df.csv", "temp/tour_result_df.csv")
 
     # すべてのアクティビティを表示

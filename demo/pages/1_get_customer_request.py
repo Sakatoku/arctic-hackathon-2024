@@ -175,9 +175,7 @@ def main():
             st.sidebar.subheader("Fix!!")
             st.snow()
 
-            st.session_state.customer_request = result["request"]
-            st.session_state.restaurants_df, st.session_state.tours_df = get_requested_df(session, st.session_state.customer_request) 
-
+            st.session_state.customer_request = result["request"] 
             st.switch_page(f"pages/{second_page_name}")
 
 if __name__ == '__main__':
