@@ -32,8 +32,9 @@ default_longitude = -122.41942
 
 # Initialize Streamlit
 def init():
-    st.set_page_config(page_title="Arctic Tourism Guide", page_icon=":airplane_departure:", layout="wide")
-    st.title("Arctic Tourism Guide")
+    st.set_page_config(page_title="SakArctic Travel Agency", page_icon=":airplane_departure:", layout="wide")
+    # st.title("Arctic Tourism Guide")
+    st.image("resources/imgs/logo.png", width=1000)
 
     # ReplicateとOpenAIのAPIキーを環境変数に設定する
     os.environ["REPLICATE_API_TOKEN"] = st.secrets["Replicate"]["apikey"]
@@ -307,8 +308,7 @@ def animation_sliders():
         # ループ変数を更新。深夜ならスキップする
         cursor_hop = 1
         if activity["type"] == "stay":
-
-        st.session_state.cursor = (st.session_state.cursor + cursor_hop) % (interval_hour + 1)
+            st.session_state.cursor = (st.session_state.cursor + cursor_hop) % (interval_hour + 1)
         st.session_state.loop_count += 1
 
 # 文字列をエスケープする: SQL用
