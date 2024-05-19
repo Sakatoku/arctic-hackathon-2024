@@ -1,7 +1,7 @@
 import json
 import re
 from getpass import getpass
-from typing import Dict
+from typing import Dict, Tuple
 
 import pandas as pd
 from snowflake.snowpark import Session
@@ -124,26 +124,27 @@ def extract_record(session: Session, table_name: str, category_col_name: str, sp
         
     return pd.concat(result_df, ignore_index=True).sort_values(by=["VISIT_TIME"], ascending=[True])
 
-def main():
-    session = get_session()
-    
-    request = get_request()
+def get_requested_df(session: Session, request: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
     for _ in range(3):
         restaurants_list = get_restaurants_list(session, request)
-        #tour_spots = get_tour_spots(session, request)
+        tour_spots = get_tour_spots(session, request)
         if restaurants_list is not None:
             break
-        #if tour_spots is not None:
-        #    break
+        if tour_spots is not None:
+            break
 
     restaurants_result_df = extract_record(session, "tourism.public.cl_restaurants_finalized", "CUISINE", restaurants_list, request)
-    #tour_result_df = extract_record(session, "tourism.public.tourism_spots_finalized", "CATEGORY", tour_spots, request)
+    tour_result_df = extract_record(session, "tourism.public.tourism_spots_finalized", "CATEGORY", tour_spots, request)
 
     print(restaurants_result_df)
-    #print(tour_result_df)
+    print(tour_result_df)
 
-    restaurants_result_df.to_csv("./data/restaurants_result_df.csv")
-    #tour_result_df.to_csv("./data/tour_result_df.csv")
+    restaurants_result_df.to_csv("./log/restaurants_result_df.csv")
+    tour_result_df.to_csv("./log/tour_result_df.csv")
+
+    return restaurants_result_df, tour_result_df
 
 if __name__ == "__main__":
-    main()
+    session = get_session()
+    request = get_request()
+    get_requested_df(session, request)

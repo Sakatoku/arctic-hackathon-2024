@@ -38,6 +38,8 @@ def main():
             # DataFrameを表示
             st.subheader(uploaded_file.name)
             st.dataframe(df)
+    
+    df.to_csv("")
 
 if __name__ == '__main__':
     main()

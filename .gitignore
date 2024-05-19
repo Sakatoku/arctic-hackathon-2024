@@ -2,3 +2,6 @@
 temp/*
 data/*
 secrets/*
+__pycache__/
+secrets.toml
+*.csv
