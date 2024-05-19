@@ -25,7 +25,7 @@ Join us in exploring the world with our cutting-edge technology. We look forward
 このアプリケーションを用いることで、快適で安全、そして実りのある旅を楽しめることでしょう。  
 私たちの最新のテクノロジーと一緒に世界を探検してください。Snowflake Data Cloud Summit 2024で皆様にお会いできることを楽しみにしています！  
 
-![Concept Art](https://raw.githubusercontent.com/Sakatoku/arctic-hackathon-2024/resources/imgs/concept-art.jpg)
+![Concept Art](https://github.com/Sakatoku/arctic-hackathon-2024/blob/main/resources/imgs/concept-art.jpg?raw=true)
 
 ## How does this application work
 
