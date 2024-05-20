@@ -33,7 +33,7 @@ Join us in exploring the world with our cutting-edge technology. We look forward
 
 ![Step1](https://github.com/Sakatoku/arctic-hackathon-2024/blob/main/resources/imgs/sakarctic-architecture1.png?raw=true)
 
-### Step 2: Hearing user preferences
+### Step 2: Interview user about his preferences
 
 ### Step 3: Extract data from database
 
@@ -43,7 +43,13 @@ Join us in exploring the world with our cutting-edge technology. We look forward
 
 ![Step4](https://github.com/Sakatoku/arctic-hackathon-2024/blob/main/resources/imgs/sakarctic-architecture3.png?raw=true)
 
-## Demo
+## Screenshots
+
+Interview part:  
+![Interview](https://github.com/Sakatoku/arctic-hackathon-2024/blob/main/resources/imgs/app_image_chat.png?raw=true)
+
+Visualization part:  
+![Visualization](https://github.com/Sakatoku/arctic-hackathon-2024/blob/main/resources/imgs/app_image_plan.png?raw=true)
 
 ## Requirements
 
