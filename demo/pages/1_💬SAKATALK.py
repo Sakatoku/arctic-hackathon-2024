@@ -102,7 +102,7 @@ def main():
             "旅行を開始する日付": "",
             "旅行を終了する日付": "",
             "旅行の予算": "",
-            "旅行中に食べたいもの": "",
+            "旅行先で食べたいもの": "",
             "旅行先でしたいこと": ""
         }
         # English
@@ -141,7 +141,7 @@ def main():
         - 出力時には出力例と同じ文章は出力しないでください。
 
         #出力例
-        旅行の予算はいくらですか？(例：10万円、100$など)
+        Where is your travel destination? (e.g., Japan, New York, London, etc.)
 
         質問：
         '''
@@ -199,7 +199,8 @@ def main():
             お客様は「{prompt_escaped}」と回答しました。
 
             #依頼
-            質問内容に対して回答が適当か判断し、適正な場合はTrue、適正でない場合はFalseと返答してください。
+            質問内容に対して回答が適正か判断し、適正な場合はTrue、適正でない場合はFalseと返答してください。
+            回答が大きく外れていなければ、適正と判断してください。
 
             #制約
             - 出力はTrueかFalseのいずれかのみとしてください。
@@ -296,7 +297,7 @@ def main():
                     - 出力時には出力例と同じ文章は出力しないでください。
 
                     #出力例
-                    旅行の予算はいくらですか？(例：10万円、100$など)
+                    Where is your travel destination? (e.g., Japan, New York, London, etc.)
 
                     質問：
                     '''
@@ -344,7 +345,7 @@ def main():
                                 ]
                     with st.chat_message("assistant", avatar=avatar_image_name):
                         st.markdown(thanks_msg)
-                        st.dataframe(df, column_config={"0": "回答内容"}, use_container_width=True)
+                        st.dataframe(df, column_config={"0": "Your Answer"}, use_container_width=True)
                         st.session_state.messages.append({"role": "assistant", "content": thanks_msg})
                     # For subsequent processing
                     result_request_txt = '{'
