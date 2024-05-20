@@ -266,7 +266,7 @@ def main():
                 # Output:
                 # ------------------
                 messages = [{"role": "user", "content": prompt_extract_request}]
-                request = get_response(session, messages).replace("：", ":")
+                request = get_response(session, messages).replace("：", ":").strip()
                 request = ast.literal_eval(request)
                 request = list(request.values())[0]
                 st.session_state.result_request[st.session_state.next_question_title] = [request]
