@@ -35,7 +35,7 @@ with col2:
         }
     </style>
     ''', unsafe_allow_html=True)
-    st.page_link("pages/1_💬SAKATALK.py", label="Let's go to your travel!", icon="🌍️")
+    st.page_link("pages/1_💬SAKATALK.py", label="Let's make a plan for your trip!", icon="🌍️")
 
 # Show breadcrumb
 services.common.show_breadcrumb(0)

@@ -28,7 +28,7 @@ def show_breadcrumb(active_mode: int):
     <ol class="breadcrumb">
         <li><span class="{mode1}">🏠 HOME</span></li>
         <li><span class="{mode2}">💬 SAKATALK</span></li>
-        <li><span class="{mode3}">🛫 PLAN</span></li>
+        <li><span class="{mode3}">🛫 YOUR PLAN</span></li>
     </ol>
     """
     st.divider()
