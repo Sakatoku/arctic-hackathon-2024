@@ -92,8 +92,13 @@ def extract_record(session: Session, table_name: str, category_col_name: str, sp
     df_base = session.table(table_name)
     df_base = df_base.with_column("customer_pref_v", call_udf("snowflake.cortex.EMBED_TEXT_768", lit('snowflake-arctic-embed-m'), lit(request_description)))
     df_base = df_base.with_column("cos_sim", call_udf("VECTOR_COSINE_SIMILARITY", col("customer_pref_v"), col("embeded_web_summary")))
-    df_base = df_base.with_column("score", col("cos_sim")+(1-(col("sum_crime")-1291)/(68930-1291))*0.05)
-    df_base.write.mode("overwrite").save_as_table("tourism.public.temp_table", table_type="temporary")
+    try:
+        df_base = df_base.with_column("score", col("cos_sim")+(1-(col("sum_crime")-1291)/(68930-1291))*0.05)
+        df_base.write.mode("overwrite").save_as_table("tourism.public.temp_table", table_type="temporary")
+    except:
+        df_base = df_base.with_column("score", col("cos_sim"))
+        df_base.write.mode("overwrite").save_as_table("tourism.public.temp_table", table_type="temporary")
+    
     for spot_k, spot_v in spots.items():
         df = session.table("tourism.public.temp_table")
         df = df.where(col(category_col_name)==spot_v)
