@@ -6,6 +6,9 @@ import streamlit as st
 import snowflake.connector
 import snowflake.snowpark as snowpark
 
+# Import submodules
+import services.common
+
 second_page_name = "2_✈️PLAN.py"
 avatar_image_name = "./resources/imgs/sakatoku.png"
 MAX_CONV_LENGTH = 22
@@ -13,11 +16,13 @@ MAX_CONV_LENGTH = 22
 # Initialize Streamlit
 def init():
     st.set_page_config(page_title="SakArctic Travel Agency", page_icon="🌍️", layout="wide", initial_sidebar_state="collapsed")
-    st.image("./resources/imgs/logo.svg")
-    st.markdown("🏠 HOME  >>  💬 **SAKATALK**  >>  ✈ PLAN")
 
-    # st.caption("This application is for hearing information for San Francisco travel plan consideration.")
-    st.divider()
+    # Show title
+    services.common.show_title()
+
+    # Show breadcrumb
+    services.common.show_breadcrumb(1)
+
     st.sidebar.title('Json')
 
     # チャットの表示をカスタマイズ
@@ -30,20 +35,20 @@ def init():
                 .stChatMessage p{
                     width: fit-content;
                 }
-                .stChatMessage:nth-child(odd){
+                .stChatMessage:nth-child(even){
                     background: #249EDC;
                     margin: 0 0 0 auto;
                 }
-                .stChatMessage:nth-child(odd) p{
+                .stChatMessage:nth-child(even) p{
                     color: #fff !important;
                 }
-                .stChatMessage:nth-child(odd) div:has(svg){
+                .stChatMessage:nth-child(even) div:has(svg){
                     display: none;
                 }
-                .stChatMessage:nth-child(even){
+                .stChatMessage:nth-child(odd){
                     background: #eee;
                 }
-                .stChatMessage:nth-child(even) p{
+                .stChatMessage:nth-child(odd) p{
                     color: #333 !important;
                 }
                 </style>

@@ -23,6 +23,8 @@ import datetime
 import time
 import os
 
+# Import submodules
+import services.common
 from services.inquiry_plan_2 import get_requested_df
 
 # Default latitude/longitude
@@ -32,9 +34,12 @@ default_longitude = -122.41942
 # Initialize Streamlit
 def init():
     st.set_page_config(page_title="SakArctic Travel Agency", page_icon="🌍️", layout="wide", initial_sidebar_state="collapsed")
-    st.image("./resources/imgs/logo.svg")
-    st.markdown("🏠 HOME  >>  💬 SAKATALK  >>  ✈ **PLAN**")
-    st.divider()
+
+    # Show title
+    services.common.show_title()
+
+    # Show breadcrumb
+    services.common.show_breadcrumb(2)
 
     # ReplicateとOpenAIのAPIキーを環境変数に設定する
     os.environ["REPLICATE_API_TOKEN"] = st.secrets["Replicate"]["apikey"]

@@ -1,5 +1,8 @@
 import streamlit as st
 
+# Import submodules
+import services.common
+
 # ページ表示
 st.set_page_config(page_title="SakArctic Travel Agency", page_icon="🌍️", layout="wide", initial_sidebar_state="collapsed")
 
@@ -10,10 +13,12 @@ with st.sidebar:
     st.session_state.snowflake_secrets = st.secrets[token_set]
   
 col1, col2 = st.columns([4, 1])
-with col1:
-    st.image("./resources/imgs/logo.svg")
-    st.markdown("🏠 **HOME**  >>  💬 SAKATALK  >>  ✈ PLAN")
 
+# Show title
+with col1:
+    services.common.show_title()
+
+# Show button for starting application 
 with col2:
     st.markdown('''
     <style>
@@ -32,8 +37,10 @@ with col2:
     ''', unsafe_allow_html=True)
     st.page_link("pages/1_💬SAKATALK.py", label="Let's go to your travel!", icon="🌍️")
 
+# Show breadcrumb
+services.common.show_breadcrumb(0)
+
 '''
----
 ## Description
 This application is a trip plan generator application.  
 It listens to the user's requests in a chat format and creates a trip plan based on the content of the interview.
