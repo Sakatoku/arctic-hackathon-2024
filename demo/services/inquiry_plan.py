@@ -90,8 +90,8 @@ def extract_record(session: Session, table_name: str, category_col_name: str, sp
     selected_names = set()
     
     df_base = session.table(table_name)
-    df_base = df_base.with_column("costomer_pref_v", call_udf("snowflake.cortex.EMBED_TEXT_768", lit('snowflake-arctic-embed-m'), lit(request_description)))
-    df_base = df_base.with_column("cos_sim", call_udf("VECTOR_COSINE_SIMILARITY", col("costomer_pref_v"), col("embeded_web_summary")))
+    df_base = df_base.with_column("customer_pref_v", call_udf("snowflake.cortex.EMBED_TEXT_768", lit('snowflake-arctic-embed-m'), lit(request_description)))
+    df_base = df_base.with_column("cos_sim", call_udf("VECTOR_COSINE_SIMILARITY", col("customer_pref_v"), col("embeded_web_summary")))
     df_base = df_base.with_column("score", col("cos_sim")+(1-(col("sum_crime")-1291)/(68930-1291))*0.05)
     df_base.write.mode("overwrite").save_as_table("tourism.public.temp_table", table_type="temporary")
     for spot_k, spot_v in spots.items():
@@ -101,8 +101,7 @@ def extract_record(session: Session, table_name: str, category_col_name: str, sp
             df = df.where(not_(col("name").in_(selected_names)))
         if df.count() == 0:
             continue
-        # df = df.with_column("costomer_pref_v", call_udf("snowflake.cortex.EMBED_TEXT_768", lit('snowflake-arctic-embed-m'), lit(request_description)))
-        #df = df.with_column("web_summary_v", call_udf("snowflake.cortex.EMBED_TEXT_768", lit('snowflake-arctic-embed-m'), col("web_summary")))
+
         df = df.sort(col("score").desc()).limit(1)
         df = df.with_column("visit_time", lit(spot_k))
         df.collect()
@@ -148,7 +147,7 @@ def get_requested_df(session: Session, request: str) -> Tuple[pd.DataFrame, pd.D
     print(tour_result_df)
 
     # 生成したアクティビティの情報を表示する
-    with st.expander("Finded Activities"):
+    with st.expander("Found Activities"):
         st.write("Here is your restraurants.")
         st.dataframe(restaurants_result_df)
         st.write("Here is your tourism spot.")
