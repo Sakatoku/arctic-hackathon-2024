@@ -25,7 +25,7 @@ import os
 
 # Import submodules
 import services.common
-from demo.services.inquiry_plan import get_requested_df
+from services.inquiry_plan import get_requested_df
 
 # Default latitude/longitude
 default_latitude = 37.77493
