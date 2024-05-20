@@ -85,24 +85,24 @@ def get_response(session, messages):
 def question_prompt():
     # Japanese
     prompt = f'''
-    #前提
-    あなたはお客様に質問しながら、お客様の旅行プランを検討しています。
-    次の質問では「{st.session_state.next_question_title}」が知りたいです。
+#前提
+あなたはお客様に質問しながら、お客様の旅行プランを検討しています。
+次の質問では「{st.session_state.next_question_title}」が知りたいです。
 
-    #依頼
-    次の質問文を考えてください。
-    出力はすべて英語でお願いします。
+#依頼
+次の質問文を考えてください。
+出力はすべて英語でお願いします。
 
-    #制約
-    - 質問文の中には、必ずお客様の回答例を含めて出力すること
-    - 必ず{st.session_state.next_question_title}に関する内容を質問してください。
-    - 出力例の形式で出力してください。
-    - 出力時には出力例と同じ文章は出力しないでください。
+#制約
+- 質問文の中には、必ずお客様の回答例を含めて出力すること
+- 必ず{st.session_state.next_question_title}に関する内容を質問してください。
+- 出力例の形式で出力してください。
+- 出力時には出力例と同じ文章は出力しないでください。
 
-    #出力例
-    Where is your travel destination? (e.g., Japan, New York, London, etc.)
+#出力例
+Where is your travel destination? (e.g., Japan, New York, London, etc.)
 
-    質問：
+質問：
     '''
     return prompt
     # English ----------
@@ -199,19 +199,19 @@ def main():
             prompt_escaped = prompt.replace("'", "").replace(",", " ")
             # Japanese
             prompt_check_answer = f'''
-            #前提
-            あなたはお客様に質問しながら、お客様の旅行プランを検討しています。
-            あなたは「{st.session_state.next_question_message}」と質問しました。
-            お客様は「{prompt_escaped}」と回答しました。
+#前提
+あなたはお客様に質問しながら、お客様の旅行プランを検討しています。
+あなたは「{st.session_state.next_question_message}」と質問しました。
+お客様は「{prompt_escaped}」と回答しました。
 
-            #依頼
-            質問内容に対して回答が適正か判断し、適正な場合はTrue、適正でない場合はFalseと返答してください。
-            回答が大きく外れていなければ、適正と判断してください。
+#依頼
+質問内容に対して回答が適正か判断し、適正な場合はTrue、適正でない場合はFalseと返答してください。
+回答が大きく外れていなければ、適正と判断してください。
 
-            #制約
-            - 出力はTrueかFalseのいずれかのみとしてください。
+#制約
+- 出力はTrueかFalseのいずれかのみとしてください。
 
-            出力：
+出力：
             '''
             # English ----------
             #Assumption.
@@ -233,24 +233,24 @@ def main():
                 # 回答の抽出
                 # Japanese
                 prompt_extract_request = f'''
-                #前提
-                あなたはお客様に質問しながら、お客様の旅行プランを検討しています。
-                あなたは「{st.session_state.next_question_message}」と質問しました。
-                お客様は「{prompt_escaped}」と回答しました。
+#前提
+あなたはお客様に質問しながら、お客様の旅行プランを検討しています。
+あなたは「{st.session_state.next_question_message}」と質問しました。
+お客様は「{prompt_escaped}」と回答しました。
 
-                #依頼
-                お客様の回答から、質問に関連する部分のみ抜き出してください。
-                出力は英語でお願いします。
+#依頼
+お客様の回答から、質問に関連する部分のみ抜き出してください。
+出力は英語でお願いします。
 
-                #制約
-                - 必ずお客様の回答から抽出してください。
-                - 必ず出力例の形式で出力してください。
-                - 日付はMM/DDの形式にしてください。
+#制約
+- 必ずお客様の回答から抽出してください。
+- 必ず出力例の形式で出力してください。
+- 日付はMM/DDの形式にしてください。
 
-                #出力例
-                {{"{st.session_state.next_question_title}": "ユーザーの回答から抽出した結果を記載してください"}}
+#出力例
+{{"{st.session_state.next_question_title}": "ユーザーの回答から抽出した結果を記載してください"}}
 
-                出力：
+出力：
                 '''
                 # English ----------
                 #Assumption.
