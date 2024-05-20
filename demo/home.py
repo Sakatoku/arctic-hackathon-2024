@@ -11,7 +11,10 @@ with st.sidebar:
     token_sets = [ "Snowflake", "Reserved1", "Reserved2" ]
     token_set = st.selectbox("Select Secrets", token_sets)
     st.session_state.snowflake_secrets = st.secrets[token_set]
-  
+
+# 不要なセッションステートの削除
+services.common.clear_session_state()
+
 col1, col2 = st.columns([4, 1])
 
 # Show title

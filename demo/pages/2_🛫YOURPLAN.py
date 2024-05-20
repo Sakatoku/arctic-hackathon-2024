@@ -219,6 +219,7 @@ def generate_prompt(situations):
     datetime = situations["datetime"]
     return f"""
     Create a photorealistic image of the following situations: {{ "type": {type}, "title": {title} , "spot_name": {spot_name}, "description": {description}, "datetime": {datetime} }}.
+    You shuld generate an image that represents the situation described above, and you should take care to ensure that it is something that you would be comfortable seeing at school or at work.
     """
 
 # 画像を生成する
@@ -237,7 +238,8 @@ def generate_image(activity):
     try:
         client = replicate.Client(api_token=os.environ["REPLICATE_API_TOKEN"])
         output = client.run(
-            "bytedance/sdxl-lightning-4step:727e49a643e999d602a896c774a0658ffefea21465756a6ce24b7ea4165eba6a",
+            "stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b",
+            # "bytedance/sdxl-lightning-4step:727e49a643e999d602a896c774a0658ffefea21465756a6ce24b7ea4165eba6a",
             input=input
         )
         return output[0]
@@ -491,10 +493,10 @@ def main():
     # アクティビティの情報を生成する
     session = connect_snowflake()
 
-    st.subheader("Find your travel plan!" if not st.session_state.yourplan_is_example else "Find your travel plan! (Example)")
+    st.subheader("Find your travel plan!")
     st.session_state.restaurants_df, st.session_state.tours_df = get_requested_df(session, st.session_state.customer_request)
     
-    st.subheader("Generate your travel plan images!" if not st.session_state.yourplan_is_example else "Generate your travel plan images! (Example)")
+    st.subheader("Generate your travel plan images!")
     st.session_state.activities = generate_activities("temp/restaurants_result_df.csv", "temp/tour_result_df.csv")
 
     # すべてのアクティビティを表示
