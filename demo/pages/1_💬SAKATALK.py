@@ -352,7 +352,6 @@ def main():
                         result_request_txt += f'"{row[0]}": "{row[1]}",'
                     result_request_txt += '}'
                     st.session_state.customer_request = result_request_txt
-                    st.write(st.session_state.customer_request)
                     st.snow()
                     time.sleep(5)
                     st.switch_page(f"pages/{second_page_name}")
