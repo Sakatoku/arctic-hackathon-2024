@@ -198,8 +198,7 @@ def main():
         if st.session_state.next_question_title != "":
             prompt_escaped = prompt.replace("'", "").replace(",", " ")
             # Japanese
-            prompt_check_answer = f'''
-#前提
+            prompt_check_answer = f'''#前提
 あなたはお客様に質問しながら、お客様の旅行プランを検討しています。
 あなたは「{st.session_state.next_question_message}」と質問しました。
 お客様は「{prompt_escaped}」と回答しました。
@@ -211,8 +210,14 @@ def main():
 #制約
 - 出力はTrueかFalseのいずれかのみとしてください。
 
-出力：
-            '''
+出力：'''
+            prompt_check_answer_except = f'''#前提
+あなたはお客様に質問しながら旅行プランを検討する。あなたは「{st.session_state.next_question_message[0:45]}」と質問した。お客様は「{prompt_escaped}」と回答した。
+#依頼
+質問内容に対して回答が適正か判断し適正な場合はTrue適正でない場合はFalseと返答。
+#制約
+- 出力はTrueかFalseのいずれかのみとする。
+出力：'''
             # English ----------
             #Assumption.
             # You are reviewing a customer's travel plans, asking questions of the customer.
@@ -227,8 +232,14 @@ def main():
 
             # Output:
             # ------------------
-            messages = [{"role": "user", "content": prompt_check_answer}]
-            check_answer = get_response(session, messages).strip()
+            try:
+                messages = [{"role": "user", "content": prompt_check_answer}]
+                check_answer = get_response(session, messages).strip()
+            except:
+                messages = [{"role": "user", "content": prompt_check_answer_except}]
+                print("!!! We encountered error !!!")
+                check_answer = get_response(session, messages).strip()
+                
             if check_answer == "True":
                 # 回答の抽出
                 # Japanese

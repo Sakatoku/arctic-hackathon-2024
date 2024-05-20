@@ -481,6 +481,10 @@ def main():
     # アクティビティの情報を生成する
     session = connect_snowflake()
 
+    if "customer_request" not in st.session_state:
+        st.warning("You must first communicate your request to SAKATALK!")
+        st.stop()
+
     st.subheader("Find your travel plan!")
     st.session_state.restaurants_df, st.session_state.tours_df = get_requested_df(session, st.session_state.customer_request)
     
