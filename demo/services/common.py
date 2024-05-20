@@ -34,3 +34,7 @@ def show_breadcrumb(active_mode: int):
     st.divider()
     st.html(css_code)
     st.html(html_code.format(mode1=mode1, mode2=mode2, mode3=mode3))
+
+def clear_session_state():
+    if "yourplan_is_example" in st.session_state:
+        del st.session_state.yourplan_is_example
