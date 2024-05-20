@@ -1,5 +1,10 @@
 streamlit
 streamlit-folium
-overpy
+snowflake-connector-python
+snowflake-snowpark-python
+snowflake-ml-python[all]
 pandas
 replicate
+beautifulsoup4
+overpy
+openai

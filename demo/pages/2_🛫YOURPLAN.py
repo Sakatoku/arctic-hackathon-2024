@@ -455,13 +455,25 @@ def main():
     # Streamlitの初期化
     init()
 
+    #  ユーザの入力した情報にエラーがあればサンプルデータに切り替える
+    if "customer_request" not in st.session_state:
+        with open("resources/data/example_request.json", "r") as f:
+            st.session_state.customer_request = f.read()
+            st.session_state.yourplan_is_example = True
+    try:
+        _ = json.parse(st.session_state.customer_request)
+    except:
+        with open("resources/data/example_request.json", "r") as f:
+            st.session_state.customer_request = f.read()
+            st.session_state.yourplan_is_example = True
+
     # アクティビティの情報を生成する
     session = connect_snowflake()
 
-    st.subheader("Find your travel plan!")
+    st.subheader("Find your travel plan!" if not st.session_state.yourplan_is_example else "Find your travel plan! (Example)")
     st.session_state.restaurants_df, st.session_state.tours_df = get_requested_df(session, st.session_state.customer_request)
     
-    st.subheader("Generate your travel plan images!")
+    st.subheader("Generate your travel plan images!" if not st.session_state.yourplan_is_example else "Generate your travel plan images! (Example)")
     st.session_state.activities = generate_activities("temp/restaurants_result_df.csv", "temp/tour_result_df.csv")
 
     # すべてのアクティビティを表示
