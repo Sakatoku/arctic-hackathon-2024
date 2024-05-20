@@ -478,18 +478,6 @@ def main():
     # Streamlitの初期化
     init()
 
-    #  ユーザの入力した情報にエラーがあればサンプルデータに切り替える
-    if "customer_request" not in st.session_state:
-        with open("resources/data/example_request.json", "r") as f:
-            st.session_state.customer_request = f.read()
-            st.session_state.yourplan_is_example = True
-    try:
-        _ = json.parse(st.session_state.customer_request)
-    except:
-        with open("resources/data/example_request.json", "r") as f:
-            st.session_state.customer_request = f.read()
-            st.session_state.yourplan_is_example = True
-
     # アクティビティの情報を生成する
     session = connect_snowflake()
 
