@@ -51,7 +51,7 @@ It listens to the user's requests in a chat format and creates a trip plan based
 ## Sample UI
 '''
 
-col1, col2 = st.columns([1, 4])
+col1, col2 = st.columns([1, 2])
 with col1:
     st.caption('Chat UI')
     st.image("./resources/imgs/app_image_chat.png")
