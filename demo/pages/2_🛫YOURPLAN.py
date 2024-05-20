@@ -457,7 +457,11 @@ def main():
 
     # アクティビティの情報を生成する
     session = connect_snowflake()
+
+    st.subheader("Find your travel plan!")
     st.session_state.restaurants_df, st.session_state.tours_df = get_requested_df(session, st.session_state.customer_request)
+    
+    st.subheader("Generate your travel plan images!")
     st.session_state.activities = generate_activities("temp/restaurants_result_df.csv", "temp/tour_result_df.csv")
 
     # すべてのアクティビティを表示
