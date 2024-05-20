@@ -1,4 +1,4 @@
-# SAKAArctic Travel Agency: A concept application for Snowflake Arctic Hackathon
+# SAKArctic Travel Agency: A concept application for Snowflake Arctic Hackathon
 
 ## About
 
@@ -33,8 +33,7 @@ Join us in exploring the world with our cutting-edge technology. We look forward
 
 ![Step1](https://github.com/Sakatoku/arctic-hackathon-2024/blob/main/resources/imgs/sakarctic-architecture1.png?raw=true)
 
-Here are the data preparation steps:
-![README](https://github.com/Sakatoku/arctic-hackathon-2024/tree/main/preparation#phase-1-data-preparation)
+Here are the data preparation steps: [README](https://github.com/Sakatoku/arctic-hackathon-2024/tree/main/preparation#phase-1-data-preparation)
 
 ### Step 2: Interview user about his preferences
 
