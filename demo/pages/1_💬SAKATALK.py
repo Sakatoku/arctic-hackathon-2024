@@ -9,7 +9,7 @@ import snowflake.snowpark as snowpark
 # Import submodules
 import services.common
 
-second_page_name = "2_✈️PLAN.py"
+second_page_name = "2_🛫YOURPLAN.py"
 avatar_image_name = "./resources/imgs/sakatoku.png"
 MAX_CONV_LENGTH = 22
 
