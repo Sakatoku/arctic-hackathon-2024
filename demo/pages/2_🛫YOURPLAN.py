@@ -101,7 +101,7 @@ def display_map(map):
 
 # Display a DataFrame
 def display_dataframe(json_list: list):
-    columns = ["visit_time", "type", "name", "category", "title", "website", "latitude", "longitude", "summary"]
+    columns = ["visit_time", "type", "name", "category", "title", "summary", "website", "latitude", "longitude"]
     rows = []
     for item in json_list:
         visit_time = item["datetime"]
