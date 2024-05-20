@@ -4,27 +4,28 @@ from bs4 import BeautifulSoup
 from getpass import getpass
 
 import pandas as pd
+import streamlit as st
+import snowflake.connector
+import snowflake.snowpark as snowpark
 from snowflake.snowpark import Session
 
 ## pip install bs4 snowflake-snowpark-python pandas
 
-def get_session() -> Session:
-    try:
-        connection_parameters = json.loads(open('./secrets/snowflake_connection.json').read())
-    except:
-        connection_parameters = {
-            "account": input("input accountname: "),
-            "user": input("input username: "),
-            "password": getpass("input password: "),
-            "role": "SYSADMIN",  # optional
-            "warehouse": "COMPUTE_WH",  # optional
-            "database": "TOURISM",  # optional
-            "schema": "PUBLIC",  # optional
-        }  
+@st.cache_resource(ttl=7200)
+def connect_snowflake():
+    # Snowflakeに接続する
+    # Snowflakeの接続情報はStreamlitのシークレット(.streamlit/secret.toml)に保存しておく
+    connection = snowflake.connector.connect(
+        user=st.secrets["Snowflake"]["user"],
+        password=st.secrets["Snowflake"]["password"],
+        account=st.secrets["Snowflake"]["account"],
+        role=st.secrets["Snowflake"]["role"],
+        warehouse=st.secrets["Snowflake"]["warehouse"])
 
-    session = Session.builder.configs(connection_parameters).create()
+    # Snowparkセッションを作成する
+    session = snowpark.Session.builder.configs({"connection": connection}).create()
+    return session 
 
-    return session
 
 def check_ng(input_text: str) -> bool:
     ng_list = ["403 Forbidden", "404 Not Found", "Not Acceptable", "Access Denied", "Connection timed out" ]
@@ -70,7 +71,7 @@ def write_summarized_table_website(session: Session, input_table: str, col_name:
     session.write_pandas(df, output_table, auto_create_table=True, overwrite=True)
 
 def main():
-    session = get_session()
+    session = connect_snowflake()
 
     write_summarized_table_website(session, "CL_RESTAURANTS", "WEBSITE", "CL_RESTAURANTS_SUMMARIZED")
     write_summarized_table_website(session, "TOURISM_SPOTS", "WEBSITE", "TOURISM_SPOTS_SUMMARIZED")
