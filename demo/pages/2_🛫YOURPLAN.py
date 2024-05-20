@@ -99,6 +99,24 @@ def create_map(activities: dict, center=(default_latitude, default_longitude), z
 def display_map(map):
     st_folium(map, use_container_width=True, height=600)
 
+# Display a DataFrame
+def display_dataframe(json_list: list):
+    columns = ["visit_time", "type", "name", "category", "title", "website", "latitude", "longitude", "summary"]
+    rows = []
+    for item in json_list:
+        visit_time = item["datetime"]
+        type = item["type"]
+        name = item["location"]["name"]
+        category = item["category"]
+        title = item["title"]
+        summary = item["summary"]
+        website = item["url"]
+        latitude = item["location"]["latitude"]
+        longitude = item["location"]["longitude"]
+        rows.append([visit_time, type, name, category, title, summary, website, latitude, longitude])
+    df = pd.DataFrame(rows, columns=columns)
+    st.dataframe(df)
+
 # 日時をパースする
 def datetime_parse(date_str: str) -> datetime:
     return datetime.datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ")
@@ -306,6 +324,9 @@ def animation_sliders():
             map = create_map(activities)
             display_map(map)
             map_disabled = False
+
+            # 一緒にデータフレームを表示する
+            display_dataframe(activities)
 
         # sleep_time秒待機
         time.sleep(sleep_time)
