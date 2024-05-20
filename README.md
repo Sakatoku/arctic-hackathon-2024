@@ -29,11 +29,27 @@ Join us in exploring the world with our cutting-edge technology. We look forward
 
 ## How does this application work
 
-- Phase 1: Data preparation
-- Phase 2: Hearing user preferences
-- Phase 3: Generate plan and visualize it
+### Step 1: Data preparation
 
-## Demo
+![Step1](https://github.com/Sakatoku/arctic-hackathon-2024/blob/main/resources/imgs/sakarctic-architecture1.png?raw=true)
+
+### Step 2: Interview user about his preferences
+
+### Step 3: Extract data from database
+
+![Step3](https://github.com/Sakatoku/arctic-hackathon-2024/blob/main/resources/imgs/sakarctic-architecture2.png?raw=true)
+
+### Step 4: Generate plan and visualize it
+
+![Step4](https://github.com/Sakatoku/arctic-hackathon-2024/blob/main/resources/imgs/sakarctic-architecture3.png?raw=true)
+
+## Screenshots
+
+Interview part:  
+![Interview](https://github.com/Sakatoku/arctic-hackathon-2024/blob/main/resources/imgs/app_image_chat.png?raw=true)
+
+Visualization part:  
+![Visualization](https://github.com/Sakatoku/arctic-hackathon-2024/blob/main/resources/imgs/app_image_plan.png?raw=true)
 
 ## Requirements
 
@@ -92,6 +108,6 @@ apikey = "r8_****"
 
 ## Authors
 
-- [Sakatoku](https://github.com/Sakatoku)
+- [Akira Sakatoku](https://github.com/Sakatoku)
 - [Toru Hiyama](https://github.com/THiyama)
-- [hrk](https://github.com/hrk-mrks)
+- [Haruki Murakoshi](https://github.com/hrk-mrks)
