@@ -117,7 +117,18 @@ def extract_record(session: Session, table_name: str, category_col_name: str, sp
 def escape_string_for_sql(s):
     return s.replace("'", "''")
 
+def get_arctic_request(session: Session, request: str) -> str:
+    return session.sql(f"select snowflake.cortex.complete('snowflake-arctic', 'Please describe in sentences the customer attributes especially for activities and food preferences in English based on the following JSON request:{request}') as response").to_pandas()["RESPONSE"].iloc[0]
+
 def get_requested_df(session: Session, request: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    request = get_arctic_request(session, request)
+    with st.expander("Your request understood by Arctic."):
+        try:
+            st.write(request)
+        except:
+            st.write("sorry, we can't display your request. but we can proceed.")
+
+    request = escape_string_for_sql(request)
     total_steps = 4
     progress_bar = st.progress(0, text="Extracting in progress using llm and your preferences. Please wait.")
     for _ in range(3):
@@ -128,16 +139,20 @@ def get_requested_df(session: Session, request: str) -> Tuple[pd.DataFrame, pd.D
         if restaurants_list is not None and tour_spots is not None:
             break
 
-    request_description = session.sql(f"select snowflake.cortex.complete('snowflake-arctic', 'Please describe in sentences the customer attributes especially for activities and food preferences in English based on the following JSON request:{request}') as response").to_pandas()["RESPONSE"].iloc[0]
-    print(request_description)
-
-    restaurants_result_df = extract_record(session, "tourism.public.cl_restaurants_finalized", "CUISINE", restaurants_list, request_description)
+    restaurants_result_df = extract_record(session, "tourism.public.cl_restaurants_finalized", "CUISINE", restaurants_list, request)
     progress_bar.progress(3.0 / total_steps)
-    tour_result_df = extract_record(session, "tourism.public.tourism_spots_finalized", "CATEGORY", tour_spots, request_description)
+    tour_result_df = extract_record(session, "tourism.public.tourism_spots_finalized", "CATEGORY", tour_spots, request)
     progress_bar.progress(4.0 / total_steps)
 
     print(restaurants_result_df)
     print(tour_result_df)
+
+    # 生成したアクティビティの情報を表示する
+    with st.expander("Finded Activities"):
+        st.write("Here is your restraurants.")
+        st.dataframe(restaurants_result_df)
+        st.write("Here is your tourism spot.")
+        st.dataframe(tour_result_df)
 
     restaurants_result_df.to_csv("./log/restaurants_result_df.csv")
     tour_result_df.to_csv("./log/tour_result_df.csv")
