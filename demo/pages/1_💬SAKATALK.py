@@ -81,6 +81,49 @@ def get_response(session, messages):
     response = response["choices"][0]["messages"]
     return response
 
+# common_question_prompt
+def question_prompt():
+    # Japanese
+    prompt = f'''
+    #前提
+    あなたはお客様に質問しながら、お客様の旅行プランを検討しています。
+    次の質問では「{st.session_state.next_question_title}」が知りたいです。
+
+    #依頼
+    次の質問文を考えてください。
+    出力はすべて英語でお願いします。
+
+    #制約
+    - 質問文の中には、必ずお客様の回答例を含めて出力すること
+    - 必ず{st.session_state.next_question_title}に関する内容を質問してください。
+    - 出力例の形式で出力してください。
+    - 出力時には出力例と同じ文章は出力しないでください。
+
+    #出力例
+    Where is your travel destination? (e.g., Japan, New York, London, etc.)
+
+    質問：
+    '''
+    return prompt
+    # English ----------
+    #Assumption.
+    # You are reviewing a customer's travel plans, asking questions of the customer.
+    # You want to know "{st.session_state.next_question_title}" for the next question.
+
+    #Request.
+    # Please come up with the following question text.
+    # All output should be in English.
+
+    #Constraints
+    # - Be sure to include an example of the customer's response in the output of the question text.
+    # - Be sure to ask a question about {st.session_state.next_question_title}.
+    # - Output in the format of the example output.
+    # - Do not output the same text as the output example when outputting.
+
+    # #Output example
+    # What is your budget for the trip? (e.g. 100,000 yen, 100$, etc.)
+    # ------------------
+
 # Main function
 def main():
     # Initialize Streamlit
@@ -96,14 +139,14 @@ def main():
         # Japanese
         st.session_state.result_request = {
             "旅行の行き先": ["san-francisco"],
-            "旅行の目的": "",
+            "サンフランシスコ旅行の目的": "",
             "参加者の年齢": "",
             "参加者の人数": "",
             "旅行を開始する日付": "",
             "旅行を終了する日付": "",
             "旅行の予算": "",
-            "旅行先で食べたいもの": "",
-            "旅行先でしたいこと": ""
+            "サンフランシスコ旅行で食べたいもの": "",
+            "サンフランシスコ旅行でしたいこと": ""
         }
         # English
         # st.session_state.result_request = {
@@ -125,44 +168,7 @@ def main():
                 st.session_state.next_question_title = key
                 break
         # Japanese
-        prompt_create_question = f'''
-        #前提
-        あなたはお客様に質問しながら、お客様の旅行プランを検討しています。
-        次の質問では「{st.session_state.next_question_title}」が知りたいです。
-
-        #依頼
-        次の質問文を考えてください。
-        出力はすべて英語でお願いします。
-
-        #制約
-        - 質問文の中には、必ずお客様の回答例を含めて出力すること
-        - 必ず{st.session_state.next_question_title}に関する内容を質問してください。
-        - 出力例の形式で出力してください。
-        - 出力時には出力例と同じ文章は出力しないでください。
-
-        #出力例
-        Where is your travel destination? (e.g., Japan, New York, London, etc.)
-
-        質問：
-        '''
-        # English ----------
-        #Assumption.
-        # You are reviewing a customer's travel plans, asking questions of the customer.
-        # You want to know "{st.session_state.next_question_title}" for the next question.
-
-        #Request.
-        # Please come up with the following question text.
-        # All output should be in English.
-
-        #Constraints
-        # - Be sure to include an example of the customer's response in the output of the question text.
-        # - Be sure to ask a question about {st.session_state.next_question_title}.
-        # - Output in the format of the example output.
-        # - Do not output the same text as the output example when outputting.
-
-        # #Output example
-        # What is your budget for the trip? (e.g. 100,000 yen, 100$, etc.)
-        # ------------------
+        prompt_create_question = question_prompt()
         messages = [{"role": "user", "content": prompt_create_question}]
         st.session_state.next_question_message = get_response(session, messages)
         st.session_state.messages.append({"role": "assistant", "content": st.session_state.next_question_message})
@@ -281,46 +287,7 @@ def main():
                 # Set question if next question
                 if st.session_state.next_question_title != "":
                     # Japanese
-                    prompt_create_question = f'''
-                    #前提
-                    あなたはお客様に質問しながら、お客様の旅行プランを検討しています。
-                    次の質問では「{st.session_state.next_question_title}」が知りたいです。
-
-                    #依頼
-                    次の質問文を考えてください。
-                    出力はすべて英語でお願いします。
-
-                    #制約
-                    - 質問文の中には、必ずお客様の回答例を含めて出力すること
-                    - 必ず{st.session_state.next_question_title}に関する内容を質問してください。
-                    - 出力例の形式で出力してください。
-                    - 出力時には出力例と同じ文章は出力しないでください。
-
-                    #出力例
-                    Where is your travel destination? (e.g., Japan, New York, London, etc.)
-
-                    質問：
-                    '''
-                    # English ----------
-                    #Assumption.
-                    # You are reviewing a customer's travel plans, asking questions of the customer.
-                    # You want to know "{st.session_state.next_question_title}" for the next question.
-
-                    #Request.
-                    # Please come up with the following question text.
-                    # All output should be in English.
-
-                    #Constraints
-                    # - Be sure to include an example of the customer's response in the output of the question text.
-                    # - Be sure to ask a question about {st.session_state.next_question_title}.
-                    # - Output in the format of the example output.
-                    # - Do not output the same text as the output example when outputting.
-
-                    #Output example
-                    # What is your budget for the trip? (e.g. 100,000 yen, 100$, etc.)
-
-                    # Question:
-                    # ------------------
+                    prompt_create_question = question_prompt()
                     messages = [{"role": "user", "content": prompt_create_question}]
                     st.session_state.next_question_message = get_response(session, messages)
                     st.session_state.messages.append({"role": "assistant", "content": st.session_state.next_question_message})
@@ -368,7 +335,6 @@ def main():
             with st.chat_message("assistant", avatar=avatar_image_name):
                 st.markdown(thanks_msg)
                 st.session_state.messages.append({"role": "assistant", "content": thanks_msg})
-
 
 if __name__ == '__main__':
     main()
