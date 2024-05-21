@@ -51,7 +51,7 @@ Interview part:
 ![Interview](https://github.com/Sakatoku/arctic-hackathon-2024/blob/main/resources/imgs/app_image_chat.png?raw=true)
 
 Visualization part:  
-![Visualization](https://github.com/Sakatoku/arctic-hackathon-2024/blob/main/resources/imgs/app_image_plan.png?raw=true)
+![Visualization](https://github.com/Sakatoku/arctic-hackathon-2024/blob/main/resources/imgs/app_image_plan_full.png?raw=true)
 
 ## Requirements
 
